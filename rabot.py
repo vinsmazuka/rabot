@@ -3,13 +3,28 @@ from botconfig import bot_configuration
 
 
 bot = telebot.TeleBot(bot_configuration['TOKEN'])
-users = {'vinsmazuka': '',
+users = {'vinsmazuka': '1712299131',
          'firmamento_89': '1641854395'}
 
 
-def mass_message(message):
-    for chat_id in users.values():
-        bot.send_message(chat_id=chat_id, text=message)
+def mass_message(message, unblock_users):
+    """
+    осуществляет массовую рассылку сообщения
+    message
+    пользователям из словаря unblock_users.
+    В словаре unblock_users ключ - username пользователя
+    в телеграмме, значение - chat.id с пользователем.
+    Функция реализована как рекурсивная, чтобы обойти
+    ошибку, связанную с тем, что некоторые пользователи
+    могли заблокировать бота, данные пользователи не получат
+    сообщение
+    """
+    try:
+        for key, value in unblock_users.items():
+            bot.send_message(chat_id=value, text=message)
+    except telebot.apihelper.ApiTelegramException:
+        del unblock_users[key]
+        mass_message(message, unblock_users)
 
 
 @bot.message_handler(commands=['start'])
