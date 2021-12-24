@@ -33,6 +33,8 @@ class Schedule(Base):
     """
     __tablename__ = 'schedule'
     id = Column(Integer, primary_key=True)
+    month = Column(String(50), nullable=False)
+    year = Column(String(50), nullable=False)
     d1 = Column(String(50), nullable=True)
     d2 = Column(String(50), nullable=True)
     d3 = Column(String(50), nullable=True)
@@ -72,6 +74,7 @@ class Schedule(Base):
 
 
 # Base.metadata.create_all(engine)
+# Base.metadata.drop_all(engine)
 
 
 
