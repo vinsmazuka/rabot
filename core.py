@@ -22,6 +22,7 @@ class Worker(Base):
     chat_id = Column(String(50), nullable=True)
     salary = Column(Float(50), nullable=False)
     deployment_date = Column(Date(), nullable=False)
+    status = Column(Boolean, nullable=False)
     schedule = relationship("Schedule")
 
 
@@ -70,8 +71,7 @@ class Schedule(Base):
     worker = relationship("Worker")
 
 
-Base.metadata.create_all(engine)
-
+# Base.metadata.create_all(engine)
 
 
 
