@@ -1,29 +1,48 @@
 import telebot
 from botconfig import bot_configuration
 
-
 bot = telebot.TeleBot(bot_configuration['TOKEN'])
 users = {'vinsmazuka': '1712299131',
          'firmamento_89': '1641854395'}
 
 
-def mass_message(message, users_dict):
+class Formatter:
     """
-    осуществляет массовую рассылку сообщения
-    message
-    пользователям из словаря unblock_users.
-    В словаре unblock_users ключ - username пользователя
-    в телеграмме, значение - chat.id с пользователем.
-    Функция реализована как рекурсивная, чтобы обойти
-    ошибку, связанную с тем, что некоторые пользователи
-    могли заблокировать бота, данные пользователи не получат
-    сообщение
+    Предназначен для предобразования сообщения
+    в необходимы формат перед отправкой
     """
-    for key, value in users_dict.items():
-        try:
-            bot.send_message(chat_id=value, text=message)
-        except telebot.apihelper.ApiTelegramException:
-            pass
+    def __init__(self, message):
+        self.message = message
+
+    def form(self):
+        return self.message
+
+
+class Sendler:
+    """
+    предназначен для рассылки сообщений
+    различными методами
+    """
+    pass
+
+    @staticmethod
+    def mass_sending(message, users_dict):
+        """
+        осуществляет массовую рассылку сообщения
+        message
+        пользователям из словаря unblock_users.
+        В словаре unblock_users ключ - username пользователя
+        в телеграмме, значение - chat.id с пользователем.
+        Функция реализована как рекурсивная, чтобы обойти
+        ошибку, связанную с тем, что некоторые пользователи
+        могли заблокировать бота, данные пользователи не получат
+        сообщение
+        """
+        for key, value in users_dict.items():
+            try:
+                bot.send_message(chat_id=value, text=message)
+            except telebot.apihelper.ApiTelegramException:
+                pass
 
 
 @bot.message_handler(commands=['start'])
