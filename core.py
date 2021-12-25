@@ -1,7 +1,9 @@
+import csv
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine, Float
+import easygui
 
 engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/rabotdb",
                        echo=True)
@@ -72,9 +74,29 @@ class Schedule(Base):
     worker_id = Column(Integer, ForeignKey('workers.id'))
     worker = relationship("Worker")
 
-
 # Base.metadata.create_all(engine)
 # Base.metadata.drop_all(engine)
+
+
+class CsvReader:
+    """
+    Предназначен для чиения данных из CSV файла
+    """
+    pass
+
+    @staticmethod
+    def read_file():
+        """
+        Читает данные из CSV файла, возвращает в виде словаря
+        """
+        path = easygui.fileopenbox()
+        with open(path, 'r', newline='') as csv_file:
+            reader = csv.DictReader(csv_file, delimiter=';')
+            result = list(reader)
+            return result
+
+
+
 
 
 
