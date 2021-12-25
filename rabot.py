@@ -7,7 +7,7 @@ users = {'vinsmazuka': '1712299131',
          'firmamento_89': '1641854395'}
 
 
-def mass_message(message, unblock_users):
+def mass_message(message, users_dict):
     """
     осуществляет массовую рассылку сообщения
     message
@@ -19,12 +19,11 @@ def mass_message(message, unblock_users):
     могли заблокировать бота, данные пользователи не получат
     сообщение
     """
-    try:
-        for key, value in unblock_users.items():
+    for key, value in users_dict.items():
+        try:
             bot.send_message(chat_id=value, text=message)
-    except telebot.apihelper.ApiTelegramException:
-        del unblock_users[key]
-        mass_message(message, unblock_users)
+        except telebot.apihelper.ApiTelegramException:
+            pass
 
 
 @bot.message_handler(commands=['start'])
