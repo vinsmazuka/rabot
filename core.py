@@ -143,6 +143,10 @@ class DbWriter:
 
     @staticmethod
     def write_worker(data):
+        """
+        Записывает данные data в БД в таблицу 'workers'
+        параметр data - список, каждый элемент которого -
+        """
         for item in data:
             session.add(item)
         session.commit()
