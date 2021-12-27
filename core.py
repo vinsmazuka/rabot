@@ -4,6 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine, Float
 import easygui
+from rabot import logging
+
 
 engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/rabotdb",
                        echo=True)
@@ -24,6 +26,7 @@ class Worker(Base):
     chat_id = Column(String(50), nullable=True)
     salary = Column(Float(50), nullable=False)
     deployment_date = Column(Date(), nullable=False)
+    birthday = Column(Date(), nullable=False)
     status = Column(Boolean, nullable=False)
     schedule = relationship("Schedule")
 
@@ -85,16 +88,24 @@ class CsvReader:
     pass
 
     @staticmethod
-    def read_file():
+    def read_file(path):
         """
-        Читает данные из CSV файла, возвращает в виде словаря
+        Читает данные из CSV файла, возвращает данные в виде словаря
         """
-        path = easygui.fileopenbox()
-        with open(path, 'r', newline='') as csv_file:
-            reader = csv.DictReader(csv_file, delimiter=';')
-            result = list(reader)
+        try:
+            with open(path, 'r', newline='') as csv_file:
+                reader = csv.DictReader(csv_file, delimiter=';')
+                result = list(reader)
+                print(result)
+        except TypeError:
+            logging.error(f'админ не указал путь к файлу')
+        else:
+            logging.info(f'Осуществлено чтение данных из файла {path}')
             return result
 
+
+if __name__ == "__main__":
+    CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу"))
 
 
 
