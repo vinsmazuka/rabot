@@ -2,7 +2,7 @@ import csv
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session, sessionmaker
 from sqlalchemy import create_engine, Float
 import easygui
 from rabot import logging
@@ -11,6 +11,8 @@ from rabot import logging
 engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/rabotdb",
                        echo=True)
 Base = declarative_base()
+session = sessionmaker(bind=engine)
+session = session()
 
 
 class Worker(Base):
@@ -130,11 +132,26 @@ class DbFormatter:
                                                                    "%d.%m.%Y").date(),
                                  birthday=datetime.strptime(item['birthday'], "%d.%m.%Y").date(),
                                  status=True))
-        print(*result)
+        return result
+
+
+class DbWriter:
+    """
+    записывает данные в БД
+    """
+    pass
+
+    @staticmethod
+    def write_worker(data):
+        for item in data:
+            session.add(item)
+        session.commit()
 
 
 if __name__ == "__main__":
-    DbFormatter.format_worker(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")))
+    DbWriter.write_worker(DbFormatter.format_worker
+                          (CsvReader.read_file(easygui.fileopenbox
+                                               ("укажите путь к файлу"))))
 
 
 
