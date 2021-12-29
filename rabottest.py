@@ -29,5 +29,6 @@ class TestCoreMethods(TestCase):
         Проверка корректного чтения из csv файла
         """
         self.assertEqual(CsvReader.read_file('test.csv'), test_list)
+        self.assertEqual('', '')
 
 
