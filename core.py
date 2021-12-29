@@ -80,10 +80,10 @@ class Schedule(Base):
     d30 = Column(String(50), nullable=True)
     d31 = Column(String(50), nullable=True)
     hours = Column(Float(50), nullable=True)
-    duties = Column(String(50), nullable=True)
     wage = Column(Float(50), nullable=True)
     worker_id = Column(Integer, ForeignKey('workers.id'))
     worker = relationship("Worker")
+
 
 # Base.metadata.create_all(engine)
 # Base.metadata.drop_all(engine)
@@ -107,6 +107,7 @@ class CsvReader:
                 print(result)
         except TypeError:
             logging.error(f'админ не указал путь к файлу')
+            return ''
         else:
             logging.info(f'Осуществлено чтение данных из файла {path}')
             return result
@@ -125,8 +126,11 @@ class DbFormatter:
         в класс Worker"""
         result = []
         for item in data:
-            result.append(Worker(name=str(item['name']), surname=str(item['surname']),
-                                 patronymic=str(item['patronymic']), username=str(item['username']),
+            for key, value in item.items():
+                if value == "":
+                    print(key)
+            result.append(Worker(name=item['name'], surname=item['surname'],
+                                 patronymic=item['patronymic'], username=item['username'],
                                  chat_id='', salary=int(item['salary']),
                                  deployment_date=datetime.strptime(item['deployment_date'],
                                                                    "%d.%m.%Y").date(),
@@ -147,15 +151,19 @@ class DbWriter:
         Записывает данные data в БД в таблицу 'workers'
         параметр data - список, каждый элемент которого -
         """
-        for item in data:
-            session.add(item)
-        session.commit()
+        if not data:
+            pass
+        else:
+            for item in data:
+                session.add(item)
+            session.commit()
 
 
 if __name__ == "__main__":
-    DbWriter.write_worker(DbFormatter.format_worker
-                          (CsvReader.read_file(easygui.fileopenbox
-                                               ("укажите путь к файлу"))))
+    # DbWriter.write_worker(DbFormatter.format_worker
+    #                       (CsvReader.read_file(easygui.fileopenbox
+    #                                            ("укажите путь к файлу"))))
+    CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу"))
 
 
 
