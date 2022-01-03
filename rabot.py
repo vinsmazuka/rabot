@@ -49,7 +49,7 @@ class Sendler:
                 logger.info(f'Сообщение "{message}" было отправлено '
                              f'пользователю {key} ')
             except telebot.apihelper.ApiTelegramException:
-                logger.error(f'Бот не смог доставить пользователю {key} '
+                logger.exception(f'Бот не смог доставить пользователю {key} '
                               f'сообщение "{message}"')
 
 
