@@ -2,12 +2,12 @@ import csv
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, Session, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine, Float
 import easygui
-from rabot import logging
+import app_logger
 
-
+logger = app_logger.get_logger(__name__)
 engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/rabotdb",
                        echo=True)
 Base = declarative_base()
@@ -106,10 +106,10 @@ class CsvReader:
                 result = list(reader)
                 print(result)
         except TypeError:
-            logging.error(f'админ не указал путь к файлу')
+            logger.error(f'админ не указал путь к файлу')
             return ''
         else:
-            logging.info(f'Осуществлено чтение данных из файла {path}')
+            logger.info(f'Осуществлено чтение данных из файла {path}')
             return result
 
 
