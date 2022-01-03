@@ -1,10 +1,9 @@
-import logging
 import telebot
+import app_logger
 from botconfig import bot_configuration
 
-FORMAT = '%(asctime)s - Уровень %(levelname)s в %(filename)s.%(funcName)s: %(message)s'
-logging.basicConfig(filename='log.txt', filemode='a', level=logging.INFO, format=FORMAT)
 
+logger = app_logger.get_logger(__name__)
 bot = telebot.TeleBot(bot_configuration['TOKEN'])
 
 users = {'vinsmazuka': '1712299131',
@@ -20,7 +19,7 @@ class Formatter:
         self.message = message
 
     def form(self):
-        logging.info(f'Сообщение "{self.message}" было отформатировано')
+        logger.info(f'Сообщение "{self.message}" было отформатировано')
         return self.message
 
 
@@ -47,10 +46,10 @@ class Sendler:
         for key, value in users_dict.items():
             try:
                 bot.send_message(chat_id=value, text=message)
-                logging.info(f'Сообщение "{message}" было отправлено '
+                logger.info(f'Сообщение "{message}" было отправлено '
                              f'пользователю {key} ')
             except telebot.apihelper.ApiTelegramException:
-                logging.error(f'Бот не смог доставить пользователю {key} '
+                logger.error(f'Бот не смог доставить пользователю {key} '
                               f'сообщение "{message}"')
 
 
@@ -64,6 +63,7 @@ def send_welcome(message):
 
 
 if __name__ == "__main__":
+    logger.info(f'Бот запущен')
     bot.infinity_polling()
 
 
