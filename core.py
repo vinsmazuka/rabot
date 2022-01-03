@@ -31,7 +31,6 @@ class Worker(Base):
     deployment_date = Column(Date(), nullable=False)
     birthday = Column(Date(), nullable=False)
     status = Column(Boolean, nullable=False)
-    schedule = relationship("Schedule")
 
     def __str__(self):
         return (f'{self.id}, {self.name}, {self.surname}, {self.patronymic}, '
@@ -82,7 +81,7 @@ class Schedule(Base):
     hours = Column(Float(50), nullable=True)
     wage = Column(Float(50), nullable=True)
     worker_id = Column(Integer, ForeignKey('workers.id'))
-    worker = relationship("Worker")
+    worker = relationship("Worker", backref="schedules", cascade="all,delete")
 
 
 # Base.metadata.create_all(engine)
@@ -161,7 +160,7 @@ class DbWriter:
 
 if __name__ == "__main__":
     # DbWriter.write_worker(DbFormatter.format_worker
-    #                       (CsvReader.read_file(easygui.fileopenbox
+    #                        (CsvReader.read_file(easygui.fileopenbox
     #                                            ("укажите путь к файлу"))))
     CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу"))
 
