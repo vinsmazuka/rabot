@@ -201,7 +201,8 @@ class DbFormatter:
                     warnings.append(message)
             result.append(row)
         logger.info("данные из файла не соответствуют формату") if \
-            len(warnings) > 0 else logger.info("данные соответствуют формату")
+            len(warnings) > 0 or data == ''\
+            else logger.info("данные соответствуют формату")
 
         return tuple(warnings) if len(warnings) > 0 else result
 
@@ -232,12 +233,27 @@ class DbWriter:
             logger.info('произведена запись данных в таблицу "workers" в БД')
 
 
-# if __name__ == "__main__":
-#     # # DbWriter.write_worker(DbFormatter.format_worker
-#     # #                        (CsvReader.read_file(easygui.fileopenbox
-#     # #                                            ("укажите путь к файлу"))))
-#     x = DbFormatter.format_worker(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")))
-#     print(x)
+class DbLoader:
+    """
+    подгружает данные из БД
+    """
+    pass
+
+    @staticmethod
+    def load_workers_id():
+        """
+        Подгружает id работников из БД,
+        возвращает в виде списка
+        """
+        id_list = []
+        q = session.query(Worker)
+        for element in q:
+            id_list.append(element.id)
+        return id_list
+
+
+if __name__ == "__main__":
+    DbLoader.load_workers_id()
 
 
 
