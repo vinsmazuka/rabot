@@ -1,5 +1,7 @@
 import csv
+import re
 from datetime import datetime
+from string import ascii_lowercase
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -123,19 +125,86 @@ class DbFormatter:
         """форматирует данные для записи в базу данных в таблицу 'workers',
         параметр data - словарь, каждый элемент которого преобразуется
         в класс Worker"""
+        warnings = []
         result = []
-        for item in data:
-            for key, value in item.items():
-                if value == "":
-                    print(key)
-            result.append(Worker(name=item['name'], surname=item['surname'],
-                                 patronymic=item['patronymic'], username=item['username'],
-                                 chat_id='', salary=int(item['salary']),
-                                 deployment_date=datetime.strptime(item['deployment_date'],
-                                                                   "%d.%m.%Y").date(),
-                                 birthday=datetime.strptime(item['birthday'], "%d.%m.%Y").date(),
-                                 status=True))
-        return result
+        today = datetime.now().date()
+        date_sample = r'^\d{2}.\d{2}.\d{4}$'
+        usname_sample = ascii_lowercase + '0123456789_'
+        for element in data:
+            row = {}
+            for key, value in element.items():
+                if key == 'patronymic':
+                    if value == '':
+                        row[key] = value
+                    elif not (value.isalpha() and value[0].isupper()):
+                        message = (f'указанное {key} "{value}" не корректно'
+                                   f'(отчество должно начинаться с заглавной буквы '
+                                   f'и должно состоять только из букв)')
+                        warnings.append(message)
+                    else:
+                        row[key] = value
+                elif key == 'name' or key == 'surname':
+                    if not (value.isalpha() and value[0].isupper()):
+                        message = (f'указанное {key} "{value}" не корректно'
+                                   '(имя/фамилия должны начинаться с заглавной буквы, '
+                                   'должны состоять только из букв и не могут быть пустой строкой)')
+                        warnings.append(message)
+                    else:
+                        row[key] = value
+                elif key == 'birthday' or key == 'deployment_date':
+                    if re.match(date_sample, value) is None:
+                        message = f'не корректный формат даты: "{value}"(корректный формат: 01.01.1988)'
+                        warnings.append(message)
+                    else:
+                        try:
+                            datetime.strptime(value, "%d.%m.%Y")
+                        except ValueError:
+                            message = f'не корректный формат даты: "{value}"(не существующая дата)'
+                            warnings.append(message)
+                        else:
+                            if datetime.strptime(value, "%d.%m.%Y").date() > today:
+                                message = f'не корректный формат даты: "{value}"(дата больше текущей)'
+                                warnings.append(message)
+                            else:
+                                row[key] = datetime.strptime(value, "%d.%m.%Y").date()
+                elif key == 'username':
+                    if len(value) < 5:
+                        message = (f'не корректный формат username: "{value}"'
+                                   f'({key} должно cостоять из латинских букв. '
+                                   'Количество знаков - минимум 5. '
+                                   'Возможно применять нижнее подчеркивание и цифры)')
+                        warnings.append(message)
+                    elif [x for x in value if x not in usname_sample]:
+                        message = (f'не корректный формат username: "{value}"'
+                                   '(username должно cостоять из латинских букв. '
+                                   'Количество знаков - минимум 5. '
+                                   'Возможно применять нижнее подчеркивание и цифры)')
+                        warnings.append(message)
+                    else:
+                        row[key] = value
+                elif key == 'salary':
+                    if value == '':
+                        message = f"вы не указали оклад у сотрудника '{element['surname']}'"
+                        warnings.append(message)
+                    else:
+                        new_value = value.replace(',', '.')
+                        try:
+                            float(new_value)
+                        except ValueError:
+                            message = (f'не корректный формат оклада: "{value}"'
+                                       '(оклад должен быть числом с плавающей запятой'
+                                       ' или целым числом)')
+                            warnings.append(message)
+                        else:
+                            row[key] = new_value
+                else:
+                    message = f'не корректное название столбца: "{key}"'
+                    warnings.append(message)
+            result.append(row)
+        logger.info("данные из файла не соответствуют формату") if \
+            len(warnings) > 0 else logger.info("данные соответствуют формату")
+
+        return tuple(warnings) if len(warnings) > 0 else result
 
 
 class DbWriter:
@@ -162,7 +231,8 @@ if __name__ == "__main__":
     # DbWriter.write_worker(DbFormatter.format_worker
     #                        (CsvReader.read_file(easygui.fileopenbox
     #                                            ("укажите путь к файлу"))))
-    CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу"))
+    x = DbFormatter.format_worker(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")))
+    print(x)
 
 
 
