@@ -1,26 +1,37 @@
+import datetime
 from unittest import TestCase
-from core import CsvReader
+from core import CsvReader, DbFormatter
 
 
-test_list = [{'id': '',
-              'name': 'Артем',
-              'surname': 'Ивлев',
-              'patronymic': 'Владимирович',
-              'username': 'vinsmazuka',
-              'chat_id': '',
-              'salary': '24500',
-              'deployment_date': '01.12.2018',
-              'birthday': '01.01.1998',
-              'status': ''},
-             {'id': '',
-              'name': 'Ксения',
-              'surname': 'Закирова',
-              'patronymic': 'Раисовна',
-              'username': 'firmamento_89',
-              'chat_id': '', 'salary': '50000',
-              'deployment_date': '12.03.2016',
-              'birthday': '01.01.2001',
-              'status': ''}]
+test_list = [{'name': 'Сергей', 'surname': 'Иванов',
+               'patronymic': 'Владимирович', 'username': 'tyiorty',
+               'salary': '24500', 'deployment_date': '01.12.2018',
+               'birthday': '01.01.1998'},
+              {'name': 'Ксения', 'surname': 'Корягина',
+               'patronymic': 'Вальдемировна', 'username': 'firmamento',
+               'salary': '50000', 'deployment_date': '12.03.2016',
+               'birthday': '01.01.2001'}]
+
+test_list1 = [{'name': '1', 'surname': '',
+               'patronymic': '', 'username': 'vins',
+               'salary': '24500,5', 'deployment_date': '01.12.2040',
+               'birthday': '01.01.022', '': ''},
+              {'name': 'К1сения', 'surname': 'акирова',
+               'patronymic': 'раисовна', 'username': 'firmamento_89',
+               'salary': '', 'deployment_date': '12.03.2016',
+               'birthday': '01.01.2001', '': 'dsfds'},
+              {'name': 'василий', 'surname': 'Котов',
+               'patronymic': 'Петрович1', 'username': 'ruuuu\\uu',
+               'salary': 'dgdfg', 'deployment_date': '01.01.2018',
+               'birthday': '46.01.1998', '': ''},
+              {'name': '', 'surname': '',
+               'patronymic': '', 'username': '',
+               'salary': '5000', 'deployment_date': '',
+               'birthday': '', '': ''}]
+
+test_list2 = ('указанное name "1" не корректно(имя/фамилия должны начинаться с заглавной буквы, должны состоять только из букв и не могут быть пустой строкой)', 'указанное surname "" не корректно(имя/фамилия должны начинаться с заглавной буквы, должны состоять только из букв и не могут быть пустой строкой)', 'не корректный формат username: "vins"(username должно cостоять из латинских букв. Количество знаков - минимум 5. Возможно применять нижнее подчеркивание и цифры)', 'не корректный формат даты: "01.12.2040"(дата больше текущей)', 'не корректный формат даты: "01.01.022"(корректный формат: 01.01.1988)', 'не корректное название столбца: ""', 'указанное name "К1сения" не корректно(имя/фамилия должны начинаться с заглавной буквы, должны состоять только из букв и не могут быть пустой строкой)', 'указанное surname "акирова" не корректно(имя/фамилия должны начинаться с заглавной буквы, должны состоять только из букв и не могут быть пустой строкой)', 'указанное patronymic "раисовна" не корректно(отчество должно начинаться с заглавной буквы и должно состоять только из букв)', "вы не указали оклад у сотрудника 'акирова'", 'не корректное название столбца: ""', 'указанное name "василий" не корректно(имя/фамилия должны начинаться с заглавной буквы, должны состоять только из букв и не могут быть пустой строкой)', 'указанное patronymic "Петрович1" не корректно(отчество должно начинаться с заглавной буквы и должно состоять только из букв)', 'не корректный формат username: "ruuuu\\uu"(username должно cостоять из латинских букв. Количество знаков - минимум 5. Возможно применять нижнее подчеркивание и цифры)', 'не корректный формат оклада: "dgdfg"(оклад должен быть числом с плавающей запятой или целым числом)', 'не корректный формат даты: "46.01.1998"(не существующая дата)', 'не корректное название столбца: ""', 'указанное name "" не корректно(имя/фамилия должны начинаться с заглавной буквы, должны состоять только из букв и не могут быть пустой строкой)', 'указанное surname "" не корректно(имя/фамилия должны начинаться с заглавной буквы, должны состоять только из букв и не могут быть пустой строкой)', 'не корректный формат username: ""(username должно cостоять из латинских букв. Количество знаков - минимум 5. Возможно применять нижнее подчеркивание и цифры)', 'не корректный формат даты: ""(корректный формат: 01.01.1988)', 'не корректный формат даты: ""(корректный формат: 01.01.1988)', 'не корректное название столбца: ""')
+test_list3 = [{'name': 'Сергей', 'surname': 'Яровой', 'patronymic': 'Иванович', 'username': 'vins_fjtyv', 'salary': '24500,5', 'deployment_date': '01.12.2001', 'birthday': '01.01.2000'}, {'name': 'Ксения', 'surname': 'Дроздова', 'patronymic': 'Раисовна', 'username': 'firmamento', 'salary': '35000', 'deployment_date': '12.03.2016', 'birthday': '01.01.2001'}, {'name': 'Василий', 'surname': 'Котов', 'patronymic': 'Петрович', 'username': 'ruuuuuu', 'salary': '15000', 'deployment_date': '01.01.2018', 'birthday': '12.01.1998'}]
+test_list4 = [{'name': 'Сергей', 'surname': 'Яровой', 'patronymic': 'Иванович', 'username': 'vins_fjtyv', 'salary': '24500.5', 'deployment_date': datetime.date(2001, 12, 1), 'birthday': datetime.date(2000, 1, 1)}, {'name': 'Ксения', 'surname': 'Дроздова', 'patronymic': 'Раисовна', 'username': 'firmamento', 'salary': '35000', 'deployment_date': datetime.date(2016, 3, 12), 'birthday': datetime.date(2001, 1, 1)}, {'name': 'Василий', 'surname': 'Котов', 'patronymic': 'Петрович', 'username': 'ruuuuuu', 'salary': '15000', 'deployment_date': datetime.date(2018, 1, 1), 'birthday': datetime.date(1998, 1, 12)}]
 
 
 class TestCoreMethods(TestCase):
@@ -30,5 +41,13 @@ class TestCoreMethods(TestCase):
         """
         self.assertEqual(CsvReader.read_file('test.csv'), test_list)
         self.assertEqual('', '')
+
+    def test_format_worker(self):
+        """
+        Проверка данных на соответствие формату данных в таблице "workers" в БД
+        """
+        self.assertEqual(DbFormatter.format_worker(test_list1), test_list2)
+        self.assertEqual(DbFormatter.format_worker(test_list3), test_list4)
+
 
 
