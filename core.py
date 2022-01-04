@@ -29,7 +29,7 @@ class Worker(Base):
     patronymic = Column(String(50), nullable=True)
     username = Column(String(50), nullable=False)
     chat_id = Column(String(50), nullable=True)
-    salary = Column(Integer, nullable=False)
+    salary = Column(Float(50), nullable=False)
     deployment_date = Column(Date(), nullable=False)
     birthday = Column(Date(), nullable=False)
     status = Column(Boolean, nullable=False)
@@ -105,7 +105,6 @@ class CsvReader:
             with open(path, 'r', newline='') as csv_file:
                 reader = csv.DictReader(csv_file, delimiter=';')
                 result = list(reader)
-                print(result)
         except TypeError:
             logger.error(f'админ не указал путь к файлу')
             return ''
@@ -196,7 +195,7 @@ class DbFormatter:
                                        ' или целым числом)')
                             warnings.append(message)
                         else:
-                            row[key] = new_value
+                            row[key] = float(new_value)
                 else:
                     message = f'не корректное название столбца: "{key}"'
                     warnings.append(message)
@@ -223,16 +222,22 @@ class DbWriter:
             pass
         else:
             for item in data:
-                session.add(item)
+                worker = Worker(name=item['name'], surname=item['surname'],
+                                patronymic=item['patronymic'], username=item['username'],
+                                chat_id='', salary=item['salary'],
+                                deployment_date=item['deployment_date'], birthday=item['birthday'],
+                                status=True)
+                session.add(worker)
             session.commit()
+            logger.info('произведена запись данных в таблицу "workers" в БД')
 
 
-if __name__ == "__main__":
-    # DbWriter.write_worker(DbFormatter.format_worker
-    #                        (CsvReader.read_file(easygui.fileopenbox
-    #                                            ("укажите путь к файлу"))))
-    x = DbFormatter.format_worker(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")))
-    print(x)
+# if __name__ == "__main__":
+#     # # DbWriter.write_worker(DbFormatter.format_worker
+#     # #                        (CsvReader.read_file(easygui.fileopenbox
+#     # #                                            ("укажите путь к файлу"))))
+#     x = DbFormatter.format_worker(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")))
+#     print(x)
 
 
 
