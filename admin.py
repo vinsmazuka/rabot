@@ -8,6 +8,29 @@ logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
 
 
+class AdmMessanger:
+    """
+    предназначен для вывода сообщений для администратора на экран
+    админского интерфейса
+    """
+    pass
+
+    @staticmethod
+    def show_message(message):
+        """
+        выводит сообщение для администратора на экран админского интерфейса
+        """
+        root = tkinter.Toplevel()
+        root.title('Не корректный формат данных:')
+        root.geometry("1200x400")
+        lbl = tkinter.Label(root,
+                            text=message,
+                            font="Arial 10",
+                            )
+        lbl.pack()
+        root.mainloop()
+
+
 def add_worker(data):
     """
     записиывает работника в БД если data - список,
@@ -30,7 +53,7 @@ def add_worker(data):
 
 
 def menu():
-    """Создает главное меню программы"""
+    """Создает главное меню администраторского интерфейса"""
     main_window = tkinter.Tk()
     main_window.title('Администраторский интерфейс бота')
     main_window.geometry("1300x600")
