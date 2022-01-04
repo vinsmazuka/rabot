@@ -206,6 +206,102 @@ class DbFormatter:
 
         return tuple(warnings) if len(warnings) > 0 else result
 
+    @staticmethod
+    def format_schedule(data, id_list):
+        """
+        форматирует данные для записи в базу данных в таблицу 'schedule'
+        :param data: словарь, содержащий инф о графике работы сотрудников
+        :param id_list: список id сотрудников, внесенных в БД
+        :return:
+        1) сообщение, если данные в data не соответсвуют формату БД
+        2) список из объектов класса Schedule,
+        если данные в data соответсвуют формату БД
+        """
+        now_year = datetime.now().year
+        months = ['январь', 'февраль', 'март',
+                  'апрель', 'май', 'июнь',
+                  'июль', 'август', 'сентябрь',
+                  'октябрь', 'ноябрь', 'декабрь']
+        errors = []
+        result = []
+        sample = '^[0-2][0-9]:[0-5][0-9]-[0-2][0-9]:[0-5][0-9]$'
+        year_sample = '^20[0-9][0-9]$'
+        for element in data:
+            row = {}
+            for key, value in element.items():
+                if key == 'worker_id':
+                    if value not in id_list:
+                        message = (f'не корректное значение id: "{value}"'
+                                   f'(работник c таким id в базе не зарегистрирован)')
+                        errors.append(message)
+                    else:
+                        row[key] = value
+                elif key == 'month':
+                    if value in months:
+                        row[key] = value
+                    else:
+                        message = f'не корректное название месяца: "{value}"'
+                        errors.append(message)
+                elif key == 'year':
+                    if re.match(year_sample, value) is None:
+                        message = (f'не корректное значение года: "{value}"'
+                                   f'(год должен быть в формате "2020")')
+                        errors.append(message)
+                    elif int(value) > now_year:
+                        message = f'указан не корректный год: "{value}"(больше текущего)'
+                        errors.append(message)
+                    else:
+                        row[key] = value
+                elif key == 'wage':
+                    if value == '':
+                        row[key] = value
+                    else:
+                        new_value = value.replace(',', '.')
+                        try:
+                            float(new_value)
+                        except ValueError:
+                            message = (f'не корректный формат зарплаты: "{value}"'
+                                       '(заплата должна быть целым числом, либо '
+                                       'числом с плавающей запятой)')
+                            errors.append(message)
+                        else:
+                            row[key] = new_value
+                elif re.match('^d[1-9][0-9]?$', key) is not None and \
+                        int(re.findall('[1-9][0-9]?', key)[0]) < 32:
+                    if value == '':
+                        row[key] = value
+                    elif re.match(sample, value) is None:
+                        message = (f'не корректный формат времени смены "{value}"'
+                                   'корректный формат: "09:00-18:00"')
+                        errors.append(message)
+                    else:
+                        starth, startm, endh, endm = re.findall(r'\d{2}', value)
+                        try:
+                            start = datetime(year=1, month=1, day=1, hour=int(starth), minute=int(startm))
+                            end = datetime(year=1, month=1, day=1, hour=int(endh), minute=int(endm))
+                        except ValueError:
+                            message = (f'не корректный формат времени смены "{value}"'
+                                       '(кол-во часов должно быть меньше 24)')
+                            errors.append(message)
+                        else:
+                            if end <= start:
+                                message = (f'не корректный формат времени смены "{value}"'
+                                           '(время окончания смены не может быть меньше времени ее начала)')
+                                errors.append(message)
+                            else:
+                                row[key] = value
+                elif key == 'surname' or key == 'name':
+                    pass
+                else:
+                    message = f'лишний столбец в шаблоне : "{key}"'
+                    errors.append(message)
+            result.append(row)
+        logger.info("данные из файла не соответствуют формату") if \
+            len(errors) > 0 or data == '' \
+            else logger.info("данные соответствуют формату")
+
+        return tuple(errors) if len(errors) > 0 else result
+
 
 class DbWriter:
     """
@@ -248,12 +344,16 @@ class DbLoader:
         id_list = []
         q = session.query(Worker)
         for element in q:
-            id_list.append(element.id)
+            id_list.append(str(element.id))
+        logger.info('подгружены id сотрудников из таблицы "workers" БД')
         return id_list
 
 
 if __name__ == "__main__":
-    DbLoader.load_workers_id()
+    x = DbFormatter.format_schedule(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")),
+                                    DbLoader.load_workers_id())
+    for row in x:
+        print(row)
 
 
 
