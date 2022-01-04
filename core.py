@@ -92,7 +92,7 @@ class Schedule(Base):
 
 class CsvReader:
     """
-    Предназначен для чиения данных из CSV файла
+    Предназначен для чтения данных из CSV файла
     """
     pass
 
@@ -121,9 +121,12 @@ class DbFormatter:
 
     @staticmethod
     def format_worker(data):
-        """форматирует данные для записи в базу данных в таблицу 'workers',
-        параметр data - словарь, каждый элемент которого преобразуется
-        в класс Worker"""
+        """форматирует данные для записи в БД в таблицу 'workers',
+        :param data: словарь, каждый элемент кот содержит инф об 1 сотруднике
+        :return:
+        1) кортеж сообщений, если данные в data не соответсвуют формату БД
+        2) список корректных данных, если данные в data соответствуют формату БД
+        """
         warnings = []
         result = []
         today = datetime.now().date()
@@ -213,9 +216,8 @@ class DbFormatter:
         :param data: словарь, содержащий инф о графике работы сотрудников
         :param id_list: список id сотрудников, внесенных в БД
         :return:
-        1) сообщение, если данные в data не соответсвуют формату БД
-        2) список из объектов класса Schedule,
-        если данные в data соответсвуют формату БД
+        1) кортеж сообщений, если данные в data не соответсвуют формату БД
+        2) список корректных данных, если данные в data соответсвуют формату БД
         """
         now_year = datetime.now().year
         months = ['январь', 'февраль', 'март',
@@ -352,8 +354,7 @@ class DbLoader:
 if __name__ == "__main__":
     x = DbFormatter.format_schedule(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")),
                                     DbLoader.load_workers_id())
-    for row in x:
-        print(row)
+    print(x)
 
 
 
