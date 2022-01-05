@@ -25,7 +25,7 @@ class AdmMessanger:
         root.geometry("1200x400")
         lbl = tkinter.Label(root,
                             text=message,
-                            font="Arial 10",
+                            font="Arial 10"
                             )
         lbl.pack()
         root.mainloop()
@@ -52,6 +52,10 @@ def add_worker(data):
         DbWriter.write_worker(data)
 
 
+def add_schedule():
+    pass
+
+
 def menu():
     """Создает главное меню администраторского интерфейса"""
     main_window = tkinter.Tk()
@@ -68,8 +72,18 @@ def menu():
                             fg="blue",
                             command=lambda: add_worker(DbFormatter.format_worker(CsvReader.read_file
                                                        (easygui.fileopenbox("укажите путь к файлу")))))
+    btn_m1 = tkinter.Button(main_window,
+                            text="Добавить график в БД",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: add_schedule(DbFormatter.format_schedule(CsvReader.read_file
+                                                                                 (easygui.fileopenbox(
+                                                                                     "укажите путь к файлу")))))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
+    btn_m1.place(relx=0.00001, rely=0.15)
     main_window.mainloop()
 
 
