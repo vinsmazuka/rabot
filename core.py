@@ -258,7 +258,7 @@ class DbFormatter:
                         row[key] = value
                 elif key == 'wage':
                     if value == '':
-                        row[key] = value
+                        row[key] = 0
                     else:
                         new_value = value.replace(',', '.')
                         try:
@@ -334,6 +334,30 @@ class DbWriter:
             session.commit()
             logger.info('произведена запись данных в таблицу "workers" в БД')
 
+    @staticmethod
+    def write_schedule(data):
+        if not data:
+            pass
+        else:
+            for item in data:
+                schedule = Schedule(month=item['month'], year=item['year'],
+                                    d1=item['d1'], d2=item['d2'], d3=item['d3'],
+                                    d4=item['d4'], d5=item['d5'], d6=item['d6'],
+                                    d7=item['d7'], d8=item['d8'], d9=item['d9'],
+                                    d10=item['d10'], d11=item['d11'], d12=item['d12'],
+                                    d13=item['d13'], d14=item['d14'], d15=item['d15'],
+                                    d16=item['d16'], d17=item['d17'], d18=item['d18'],
+                                    d19=item['d19'], d20=item['d20'], d21=item['d21'],
+                                    d22=item['d22'], d23=item['d23'], d24=item['d24'],
+                                    d25=item['d25'], d26=item['d26'], d27=item['d27'],
+                                    d28=item['d28'], d29=item['d29'], d30=item['d30'],
+                                    d31=item['d31'], hours=item['hours'], wage=item['wage'],
+                                    worker_id=item['worker_id']
+                                    )
+                session.add(schedule)
+            session.commit()
+            logger.info('произведена запись данных в таблицу "schedule" в БД')
+
 
 class DbLoader:
     """
@@ -358,7 +382,7 @@ class DbLoader:
 if __name__ == "__main__":
     x = DbFormatter.format_schedule(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")),
                                     DbLoader.load_workers_id())
-    print(x)
+    DbWriter.write_schedule(x)
 
 
 
