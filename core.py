@@ -121,7 +121,8 @@ class DbFormatter:
 
     @staticmethod
     def format_worker(data):
-        """форматирует данные для записи в БД в таблицу 'workers',
+        """
+        форматирует данные для записи в БД в таблицу 'workers',
         :param data: словарь, каждый элемент кот содержит инф об 1 сотруднике
         :return:
         1) кортеж сообщений, если данные в data не соответсвуют формату БД
@@ -229,6 +230,7 @@ class DbFormatter:
         sample = '^[0-2][0-9]:[0-5][0-9]-[0-2][0-9]:[0-5][0-9]$'
         year_sample = '^20[0-9][0-9]$'
         for element in data:
+            work_hours = 0
             row = {}
             for key, value in element.items():
                 if key == 'worker_id':
@@ -237,7 +239,7 @@ class DbFormatter:
                                    f'(работник c таким id в базе не зарегистрирован)')
                         errors.append(message)
                     else:
-                        row[key] = value
+                        row[key] = int(value)
                 elif key == 'month':
                     if value in months:
                         row[key] = value
@@ -267,7 +269,7 @@ class DbFormatter:
                                        'числом с плавающей запятой)')
                             errors.append(message)
                         else:
-                            row[key] = new_value
+                            row[key] = float(new_value)
                 elif re.match('^d[1-9][0-9]?$', key) is not None and \
                         int(re.findall('[1-9][0-9]?', key)[0]) < 32:
                     if value == '':
@@ -291,7 +293,10 @@ class DbFormatter:
                                            '(время окончания смены не может быть меньше времени ее начала)')
                                 errors.append(message)
                             else:
+                                delta = end - start
+                                work_hours += delta.seconds / 3600 - 1
                                 row[key] = value
+                                row['hours'] = work_hours
                 elif key == 'surname' or key == 'name':
                     pass
                 else:
@@ -314,8 +319,7 @@ class DbWriter:
     @staticmethod
     def write_worker(data):
         """
-        Записывает данные data в БД в таблицу 'workers'
-        параметр data - список, каждый элемент которого -
+        Записывает данные из списка data в БД в таблицу 'workers'
         """
         if not data:
             pass
