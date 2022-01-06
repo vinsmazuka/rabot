@@ -2,7 +2,7 @@ import tkinter
 import easygui
 import rabot
 import app_logger
-from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, Worker
+from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, Worker, Schedule
 
 logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
@@ -87,6 +87,13 @@ def write_file_csv(func):
         AdmMessanger.show_message(func)
 
 
+def inp_path():
+    """
+    :return: аозвращает путь к файлу, указанному администратором
+    """
+    return easygui.fileopenbox("укажите путь к файлу")
+
+
 def menu():
     """Создает главное меню администраторского интерфейса"""
     main_window = tkinter.Tk()
@@ -102,7 +109,7 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: add_worker(DbFormatter.format_worker(CsvReader.read_file
-                                                       (easygui.fileopenbox("укажите путь к файлу")))))
+                                                       (inp_path()))))
     btn_m1 = tkinter.Button(main_window,
                             text="Добавить график в БД",
                             width=23,
@@ -110,8 +117,7 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: add_schedule(DbFormatter.format_schedule
-                                                         (CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")),
-                                                          DbLoader.load_workers_id())))
+                                                         (CsvReader.read_file(inp_path()), DbLoader.load_workers_id())))
     btn_m2 = tkinter.Button(main_window,
                             text="Записать работников\n"
                                  "из БД в файл",
@@ -120,11 +126,21 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: write_file_csv(CsvWriter.write_worker
-                                                           (easygui.fileopenbox(), DbLoader.load_table(Worker))))
+                                                           (inp_path(), DbLoader.load_table(Worker))))
+    btn_m3 = tkinter.Button(main_window,
+                            text="Записать график\n"
+                                 "из БД в файл",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: write_file_csv(CsvWriter.write_schedules
+                                                           (inp_path(), DbLoader.load_table(Schedule))))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
     btn_m2.place(relx=0.00001, rely=0.24)
+    btn_m3.place(relx=0.00001, rely=0.33)
     main_window.mainloop()
 
 
