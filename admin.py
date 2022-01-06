@@ -50,7 +50,18 @@ class AdmMessanger:
 
     @staticmethod
     def month_selector(data):
+        """
+        открывает окно, в котором администратор может выбрать месяц,
+        который будет удален из бызы данных
+        :param data: список состоящий из кортежей, каждый кортеж состоит из
+        2 элементов, 1 элемент - название месяца, 2 - соответствующий месяцу год
+        """
         def save():
+            """
+            сохраняет месяц, выбранный администратором из списка data
+            и передает его в метод del_schedule класса DbEraser для удаления
+            из БД, открывает окно с сообщением для администратора
+            """
             nonlocal root, selector, selected_month
             user_input = selector.curselection()[0]
             selected_month = selector.get(user_input)
