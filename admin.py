@@ -2,7 +2,7 @@ import tkinter
 import easygui
 import rabot
 import app_logger
-from core import DbWriter, DbFormatter, CsvReader, DbLoader
+from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter
 
 logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
@@ -53,6 +53,11 @@ def add_worker(data):
 
 
 def add_schedule(data):
+    """
+    записиывает график в БД если data - список,
+    либо выводит сообщение о некорректном формате данных,
+    если data - кортеж
+    """
     if isinstance(data, tuple):
         root = tkinter.Toplevel()
         root.title('Не корректный формат данных:')
@@ -66,6 +71,13 @@ def add_schedule(data):
         root.mainloop()
     else:
         DbWriter.write_schedule(data)
+
+
+def workers_write_file(data):
+    if data is None:
+        pass
+    else:
+        AdmMessanger.show_message(data)
 
 
 def menu():
@@ -93,9 +105,19 @@ def menu():
                             command=lambda: add_schedule(DbFormatter.format_schedule
                                                          (CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")),
                                                           DbLoader.load_workers_id())))
+    btn_m2 = tkinter.Button(main_window,
+                            text="Записать работников\n"
+                                 "из БД в файл",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: workers_write_file(CsvWriter.write_worker
+                                                               (easygui.fileopenbox(), DbLoader.load_workers())))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
+    btn_m2.place(relx=0.00001, rely=0.24)
     main_window.mainloop()
 
 
