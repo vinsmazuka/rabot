@@ -480,7 +480,7 @@ class DbLoader:
             if row not in result_list:
                 result_list.append(row)
         logger.info('подгружены столбцы "month" и "year" из таблицы "schedule" БД')
-        sorted_result = (sorted(result_list, key=lambda x: x[1]))
+        sorted_result = (sorted(result_list, key=lambda x: x[1], reverse=True))
         return sorted_result
 
 
