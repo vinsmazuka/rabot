@@ -57,7 +57,7 @@ def add_worker(data):
     if isinstance(data, tuple):
         AdmMessanger.show_messages(data)
     else:
-        DbWriter.write_worker(data)
+        DbWriter.write_worker_db(data)
 
 
 def add_schedule(data):
@@ -69,7 +69,7 @@ def add_schedule(data):
     if isinstance(data, tuple):
         AdmMessanger.show_messages(data)
     else:
-        DbWriter.write_schedule(data)
+        DbWriter.write_schedule_db(data)
 
 
 def write_file_csv(func):
