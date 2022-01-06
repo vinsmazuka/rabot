@@ -10,8 +10,7 @@ import easygui
 import app_logger
 
 logger = app_logger.get_logger(__name__)
-engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/rabotdb",
-                       echo=True)
+engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/rabotdb")
 Base = declarative_base()
 session = sessionmaker(bind=engine)
 session = session()
@@ -471,7 +470,9 @@ class DbLoader:
 
 
 if __name__ == "__main__":
-    DbLoader.load_table(Schedule)
+    # print(DbLoader.load_table(Schedule))
+    # CsvWriter.write_schedules('test2.csv', DbLoader.load_table(Schedule))
+    print(CsvReader.read_file('test2.csv'))
 #     # CsvWriter.write_worker(easygui.fileopenbox(), DbLoader.load_workers())
 #     # CsvReader.read_file(easygui.fileopenbox())
 #     # Base.metadata.create_all(engine)
