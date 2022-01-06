@@ -149,6 +149,43 @@ class CsvWriter:
                 logger.info(f'была осуществлена запись таблицы "workers" в файл {path}')
                 return message
 
+    @staticmethod
+    def write_schedules(path, schedules_list):
+        """
+        Записывает все строки из таблицы "schedule" в указанный файл CSV
+        :param path: путь к файлу, в кот необходимо произвести запись
+        :param schedules_list: список, каждый элемент которого
+        содержит информацию о графике работы сотрудника в отдельном месяце
+        в виде словаря
+        :return: возвращает сообщение об ошибке, если возникла ошибка
+        """
+        if path is None:
+            logger.info('администратор не указал путь к файлу')
+            return None
+        else:
+            headers = ['worker_id', 'month', 'year', 'd1', 'd2', 'd3', 'd4', 'd5',
+                       'd6', 'd7', 'd8', 'd9', 'd10', 'd11', 'd12', 'd13', 'd14',
+                       'd15', 'd16', 'd17', 'd18', 'd19', 'd20', 'd21', 'd22', 'd23',
+                       'd24', 'd25', 'd26', 'd27', 'd28', 'd29', 'd30', 'd31', 'wage',
+                       'hours', 'id']
+            for item in schedules_list:
+                item['wage'] = str(item['wage']).replace('.', ',')
+            try:
+                with open(path, "w", newline="") as csv_file:
+                    writer = csv.DictWriter(csv_file, delimiter=';', fieldnames=headers)
+                    writer.writeheader()
+                    writer.writerows(schedules_list)
+            except PermissionError:
+                message = (f'запись в файл не была осуществлена, т.к. файл {path} был открыт,'
+                           ' закроте файл и повторите попытку')
+                logger.error(f'запись в файл не была осуществлена, '
+                             f'т.к. файл {path} был открыт')
+                return message
+            else:
+                message = f'была осуществлена запись таблицы "schedule" в файл {path}'
+                logger.info(f'была осуществлена запись таблицы "schedule" в файл {path}')
+                return message
+
 
 class DbFormatter:
     """
@@ -416,31 +453,32 @@ class DbLoader:
         return id_list
 
     @staticmethod
-    def load_workers():
+    def load_table(class_name):
         """
         Подгружает таблицу "workers" из БД,
         возращает список, каждый элемент списка
         содержит информацию об отдельном сотруднике
         в виде словаря
         """
-        q = session.query(Worker)
+        q = session.query(class_name)
         result = []
         for element in q:
             item = vars(element)
             del item['_sa_instance_state']
             result.append(item)
-        logger.info('подгружена таблица "workers" из БД')
+        logger.info(f'подгружена таблица {class_name} из БД')
         return result
 
 
 if __name__ == "__main__":
-    CsvWriter.write_worker(easygui.fileopenbox(), DbLoader.load_workers())
-    CsvReader.read_file(easygui.fileopenbox())
-# #     Base.metadata.create_all(engine)
+    DbLoader.load_table(Schedule)
+#     # CsvWriter.write_worker(easygui.fileopenbox(), DbLoader.load_workers())
+#     # CsvReader.read_file(easygui.fileopenbox())
+#     # Base.metadata.create_all(engine)
 #     # Base.metadata.drop_all(engine)
-# #     # x = DbFormatter.format_schedule(,
-# #     #                                 DbLoader.load_workers_id())
-# #     # # DbWriter.write_schedule(x)
+# # #     # x = DbFormatter.format_schedule(,
+# # #     #                                 DbLoader.load_workers_id())
+# # #     # # DbWriter.write_schedule(x)
 
 
 
