@@ -58,6 +58,7 @@ def add_worker(data):
         AdmMessanger.show_messages(data)
     else:
         DbWriter.write_worker_db(data)
+        AdmMessanger.show_message('была осуществлена запись в таблицу "workers" в БД')
 
 
 def add_schedule(data):
@@ -70,6 +71,7 @@ def add_schedule(data):
         AdmMessanger.show_messages(data)
     else:
         DbWriter.write_schedule_db(data)
+        AdmMessanger.show_message('была осуществлена запись в таблицу "schedule" в БД')
 
 
 def write_file_csv(func):
