@@ -469,10 +469,36 @@ class DbLoader:
         return result
 
 
+class DbEraser:
+    """
+    Предназначен для удаления данных из БД
+    """
+    pass
+
+    @staticmethod
+    def del_schedule(month, year):
+        """
+        удаляет из таблицы "schedule" БД все строки,
+        в которых поле month = введенному значению аргумента month и
+        поле year = введенному значению аргумента year
+        :param month: название месяца с маленькой буквы в формате str
+        :param year: номер года в формате str
+        :return: возвращает сообщение об удаленных данных
+        """
+
+        q = session.query(Schedule).filter(Schedule.month.ilike(month), \
+                                           Schedule.year.ilike(year)).delete(synchronize_session='fetch')
+        session.commit()
+        message = (f'все строки из таблицы "schedule" в БД, '
+                   f'в которых месяц = {month} и год = {year} были удалены')
+        return message
+
+
 if __name__ == "__main__":
+    DbEraser.del_schedule('январь', '2022')
     # print(DbLoader.load_table(Schedule))
     # CsvWriter.write_schedules('test2.csv', DbLoader.load_table(Schedule))
-    print(CsvReader.read_file('test2.csv'))
+    # print(CsvReader.read_file('test2.csv'))
 #     # CsvWriter.write_worker(easygui.fileopenbox(), DbLoader.load_workers())
 #     # CsvReader.read_file(easygui.fileopenbox())
 #     # Base.metadata.create_all(engine)
