@@ -54,6 +54,7 @@ class TestCoreMethods(TestCase):
         """
         CsvWriter.write_worker('test1.csv', test_list9)
         self.assertEqual(test_list10, CsvReader.read_file('test1.csv'))
+        self.assertEqual(CsvWriter.write_worker(None, test_list9), None)
 
     def test_format_worker(self):
         """
