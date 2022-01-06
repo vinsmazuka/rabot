@@ -2,7 +2,7 @@ import tkinter
 import easygui
 import rabot
 import app_logger
-from core import DbWriter, DbFormatter, CsvReader
+from core import DbWriter, DbFormatter, CsvReader, DbLoader
 
 logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
@@ -52,8 +52,20 @@ def add_worker(data):
         DbWriter.write_worker(data)
 
 
-def add_schedule():
-    pass
+def add_schedule(data):
+    if isinstance(data, tuple):
+        root = tkinter.Toplevel()
+        root.title('Не корректный формат данных:')
+        root.geometry("1200x400")
+        for i, value in enumerate(data):
+            locals()['lbl' + str(i)] = tkinter.Label(root,
+                                                     text=value,
+                                                     font="Arial 10",
+                                                     )
+            locals()['lbl' + str(i)].pack(anchor="w")
+        root.mainloop()
+    else:
+        DbWriter.write_schedule(data)
 
 
 def menu():
@@ -78,9 +90,9 @@ def menu():
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: add_schedule(DbFormatter.format_schedule(CsvReader.read_file
-                                                                                 (easygui.fileopenbox(
-                                                                                     "укажите путь к файлу")))))
+                            command=lambda: add_schedule(DbFormatter.format_schedule
+                                                         (CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")),
+                                                          DbLoader.load_workers_id())))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
