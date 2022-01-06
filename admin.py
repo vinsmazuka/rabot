@@ -2,7 +2,7 @@ import tkinter
 import easygui
 import rabot
 import app_logger
-from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter
+from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, Worker
 
 logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
@@ -118,7 +118,7 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: write_file_csv(CsvWriter.write_worker
-                                                           (easygui.fileopenbox(), DbLoader.load_workers())))
+                                                           (easygui.fileopenbox(), DbLoader.load_workers(Worker))))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
