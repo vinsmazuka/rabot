@@ -118,7 +118,7 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: write_file_csv(CsvWriter.write_worker
-                                                           (easygui.fileopenbox(), DbLoader.load_workers(Worker))))
+                                                           (easygui.fileopenbox(), DbLoader.load_table(Worker))))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
