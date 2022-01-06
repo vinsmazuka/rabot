@@ -109,6 +109,46 @@ class CsvReader:
             return result
 
 
+class CsvWriter:
+    """
+    Предназначен для записи данных в CSV файл
+    """
+    pass
+
+    @staticmethod
+    def write_worker(path, workers_list):
+        """
+        Записывает всех работников в указанный файл CSV
+        :param path: путь к файлу, в кот необходимо произвести запись
+        :param workers_list: список, каждый элемент списка
+        содержит информацию об отдельном сотруднике
+        в виде словаря
+        """
+        if path is None:
+            logger.info('администратор не указал путь к файлу')
+            return None
+        else:
+            headers = ['id', 'name', 'surname', 'patronymic', 'username',
+                       'salary', 'deployment_date', 'birthday', 'status', 'chat_id']
+            for item in workers_list:
+                item['salary'] = str(item['salary']).replace('.', ',')
+            try:
+                with open(path, "w", newline="") as csv_file:
+                    writer = csv.DictWriter(csv_file, delimiter=';', fieldnames=headers)
+                    writer.writeheader()
+                    writer.writerows(workers_list)
+            except PermissionError:
+                message = (f'запись в файл не была осуществлена, т.к. файл {path} был открыт,'
+                           ' закроте файл и повторите попытку')
+                logger.info(f'запись в файл не была осуществлена, '
+                            f'т.к. файл {path} был открыт')
+                return message
+            else:
+                message = f'была осуществлена запись таблицы "workers" в файл {path}'
+                logger.info(f'была осуществлена запись таблицы "workers" в файл {path}')
+                return message
+
+
 class DbFormatter:
     """
     форматирует данные для записи в базу данных
@@ -392,13 +432,14 @@ class DbLoader:
         return result
 
 
-if __name__ == "__main__":
-    DbLoader.load_workers()
-# #     Base.metadata.create_all(engine)
-#     # Base.metadata.drop_all(engine)
-# #     # x = DbFormatter.format_schedule(,
-# #     #                                 DbLoader.load_workers_id())
-# #     # # DbWriter.write_schedule(x)
+# if __name__ == "__main__":
+#     CsvWriter.write_worker(easygui.fileopenbox(), DbLoader.load_workers())
+#     CsvReader.read_file(easygui.fileopenbox())
+# # #     Base.metadata.create_all(engine)
+# #     # Base.metadata.drop_all(engine)
+# # #     # x = DbFormatter.format_schedule(,
+# # #     #                                 DbLoader.load_workers_id())
+# # #     # # DbWriter.write_schedule(x)
 
 
 
