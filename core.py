@@ -468,6 +468,22 @@ class DbLoader:
         logger.info(f'подгружена таблица {class_name} из БД')
         return result
 
+    @staticmethod
+    def load_months():
+        """
+        Подгружает столбцы "month" и "year" из таблицы "schedule" БД
+        """
+        result_list = []
+        q = session.query(Schedule)
+        for element in q:
+            row = (element.month, element.year)
+            if row not in result_list:
+                result_list.append(row)
+        logger.info('подгружены столбцы "month" и "year" из таблицы "schedule" БД')
+        sorted_result = sorted(sorted(result_list, key=lambda x: x[0],
+                                      reverse=True), key=lambda x: x[1])
+        return sorted_result
+
 
 class DbEraser:
     """
@@ -494,17 +510,10 @@ class DbEraser:
 
 
 if __name__ == "__main__":
-    DbEraser.del_schedule('декабрь', '2021')
-    # print(DbLoader.load_table(Schedule))
-    # CsvWriter.write_schedules('test2.csv', DbLoader.load_table(Schedule))
-    # print(CsvReader.read_file('test2.csv'))
-#     # CsvWriter.write_worker(easygui.fileopenbox(), DbLoader.load_workers())
-#     # CsvReader.read_file(easygui.fileopenbox())
-#     # Base.metadata.create_all(engine)
+    print(DbLoader.load_months())
+      # Base.metadata.create_all(engine)
 #     # Base.metadata.drop_all(engine)
-# # #     # x = DbFormatter.format_schedule(,
-# # #     #                                 DbLoader.load_workers_id())
-# # #     # # DbWriter.write_schedule(x)
+
 
 
 
