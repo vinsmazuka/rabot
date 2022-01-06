@@ -2,7 +2,8 @@ import tkinter
 import easygui
 import rabot
 import app_logger
-from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, Worker, Schedule
+from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter
+from core import Worker, Schedule, DbEraser
 
 logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
@@ -21,7 +22,7 @@ class AdmMessanger:
         выводит сообщение для администратора на экран админского интерфейса
         """
         root = tkinter.Toplevel()
-        root.title('Не корректный формат данных:')
+        root.title('Сообщение для администратора:')
         root.geometry("1200x400")
         lbl = tkinter.Label(root,
                             text=message,
@@ -54,9 +55,10 @@ class AdmMessanger:
             user_input = selector.curselection()[0]
             selected_month = selector.get(user_input)
             root.destroy()
+            AdmMessanger.show_message(DbEraser.del_schedule(*selected_month))
 
         selected_month = ()
-        root = tkinter.Tk()
+        root = tkinter.Toplevel()
         root.title('Выберите 1 месяц из предложенных')
         root.geometry("400x600")
         selector = tkinter.Listbox(root, height=len(data))
@@ -72,7 +74,6 @@ class AdmMessanger:
         selector.pack()
         btn.pack()
         root.mainloop()
-        return selected_month
 
 
 def add_worker(data):
@@ -163,17 +164,25 @@ def menu():
                             fg="blue",
                             command=lambda: write_file_csv(CsvWriter.write_schedules
                                                            (inp_path(), DbLoader.load_table(Schedule))))
+    btn_m4 = tkinter.Button(main_window,
+                            text="Удалить график за\n"
+                                 "месяц из БД",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: AdmMessanger.month_selector(DbLoader.load_months()))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
     btn_m2.place(relx=0.00001, rely=0.24)
     btn_m3.place(relx=0.00001, rely=0.33)
+    btn_m4.place(relx=0.00001, rely=0.42)
     main_window.mainloop()
 
 
 if __name__ == "__main__":
-    print(type(AdmMessanger.show_selector(DbLoader.load_months())))
-    # menu()
+    menu()
 
 
 
