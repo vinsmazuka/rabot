@@ -249,7 +249,8 @@ class DbFormatter:
                 elif key == 'year':
                     if re.match(year_sample, value) is None:
                         message = (f'не корректное значение года: "{value}"'
-                                   f'(год должен быть в формате "2020")')
+                                   f'(год должен быть в формате "2020"'
+                                   f' и не может быть пустой строкой)')
                         errors.append(message)
                     elif int(value) > now_year:
                         message = f'указан не корректный год: "{value}"(больше текущего)'
@@ -276,7 +277,7 @@ class DbFormatter:
                         row[key] = value
                     elif re.match(sample, value) is None:
                         message = (f'не корректный формат времени смены "{value}"'
-                                   'корректный формат: "09:00-18:00"')
+                                   '(корректный формат: "09:00-18:00")')
                         errors.append(message)
                     else:
                         starth, startm, endh, endm = re.findall(r'\d{2}', value)
