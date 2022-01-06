@@ -485,9 +485,8 @@ class DbEraser:
         :param year: номер года в формате str
         :return: возвращает сообщение об удаленных данных
         """
-
-        q = session.query(Schedule).filter(Schedule.month.ilike(month), \
-                                           Schedule.year.ilike(year)).delete(synchronize_session='fetch')
+        session.query(Schedule).filter(Schedule.month.ilike(month),
+                                       Schedule.year.ilike(year)).delete(synchronize_session='fetch')
         session.commit()
         message = (f'все строки из таблицы "schedule" в БД, '
                    f'в которых месяц = {month} и год = {year} были удалены')
@@ -495,7 +494,7 @@ class DbEraser:
 
 
 if __name__ == "__main__":
-    DbEraser.del_schedule('январь', '2022')
+    DbEraser.del_schedule('декабрь', '2021')
     # print(DbLoader.load_table(Schedule))
     # CsvWriter.write_schedules('test2.csv', DbLoader.load_table(Schedule))
     # print(CsvReader.read_file('test2.csv'))
