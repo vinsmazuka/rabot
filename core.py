@@ -480,8 +480,7 @@ class DbLoader:
             if row not in result_list:
                 result_list.append(row)
         logger.info('подгружены столбцы "month" и "year" из таблицы "schedule" БД')
-        sorted_result = sorted(sorted(result_list, key=lambda x: x[0],
-                                      reverse=True), key=lambda x: x[1])
+        sorted_result = (sorted(result_list, key=lambda x: x[1]))
         return sorted_result
 
 
@@ -511,8 +510,8 @@ class DbEraser:
 
 if __name__ == "__main__":
     print(DbLoader.load_months())
-      # Base.metadata.create_all(engine)
-#     # Base.metadata.drop_all(engine)
+    # Base.metadata.create_all(engine)
+    # Base.metadata.drop_all(engine)
 
 
 
