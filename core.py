@@ -123,6 +123,7 @@ class CsvWriter:
         :param workers_list: список, каждый элемент списка
         содержит информацию об отдельном сотруднике
         в виде словаря
+        :return возвращает сообщение об ошибке, если возникла ошибка
         """
         if path is None:
             logger.info('администратор не указал путь к файлу')
@@ -140,8 +141,8 @@ class CsvWriter:
             except PermissionError:
                 message = (f'запись в файл не была осуществлена, т.к. файл {path} был открыт,'
                            ' закроте файл и повторите попытку')
-                logger.info(f'запись в файл не была осуществлена, '
-                            f'т.к. файл {path} был открыт')
+                logger.error(f'запись в файл не была осуществлена, '
+                             f'т.к. файл {path} был открыт')
                 return message
             else:
                 message = f'была осуществлена запись таблицы "workers" в файл {path}'
@@ -353,7 +354,7 @@ class DbWriter:
     pass
 
     @staticmethod
-    def write_worker(data):
+    def write_worker_db(data):
         """
         Записывает данные из списка data в БД в таблицу 'workers'
         """
@@ -371,7 +372,7 @@ class DbWriter:
             logger.info('произведена запись данных в таблицу "workers" в БД')
 
     @staticmethod
-    def write_schedule(data):
+    def write_schedule_db(data):
         if not data:
             pass
         else:
@@ -432,14 +433,14 @@ class DbLoader:
         return result
 
 
-# if __name__ == "__main__":
-#     CsvWriter.write_worker(easygui.fileopenbox(), DbLoader.load_workers())
-#     CsvReader.read_file(easygui.fileopenbox())
-# # #     Base.metadata.create_all(engine)
-# #     # Base.metadata.drop_all(engine)
-# # #     # x = DbFormatter.format_schedule(,
-# # #     #                                 DbLoader.load_workers_id())
-# # #     # # DbWriter.write_schedule(x)
+if __name__ == "__main__":
+    CsvWriter.write_worker(easygui.fileopenbox(), DbLoader.load_workers())
+    CsvReader.read_file(easygui.fileopenbox())
+# #     Base.metadata.create_all(engine)
+#     # Base.metadata.drop_all(engine)
+# #     # x = DbFormatter.format_schedule(,
+# #     #                                 DbLoader.load_workers_id())
+# #     # # DbWriter.write_schedule(x)
 
 
 
