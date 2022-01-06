@@ -47,6 +47,33 @@ class AdmMessanger:
             locals()['lbl' + str(i)].pack(anchor="w")
         root.mainloop()
 
+    @staticmethod
+    def month_selector(data):
+        def save():
+            nonlocal root, selector, selected_month
+            user_input = selector.curselection()[0]
+            selected_month = selector.get(user_input)
+            root.destroy()
+
+        selected_month = ()
+        root = tkinter.Tk()
+        root.title('Выберите 1 месяц из предложенных')
+        root.geometry("400x600")
+        selector = tkinter.Listbox(root, height=len(data))
+        for element in data:
+            selector.insert(tkinter.END, element)
+        btn = tkinter.Button(root,
+                             text="save",
+                             width=23,
+                             height=3,
+                             bg="white",
+                             fg="blue",
+                             command=lambda: save())
+        selector.pack()
+        btn.pack()
+        root.mainloop()
+        return selected_month
+
 
 def add_worker(data):
     """
@@ -145,9 +172,8 @@ def menu():
 
 
 if __name__ == "__main__":
-    menu()
-
-
+    print(type(AdmMessanger.show_selector(DbLoader.load_months())))
+    # menu()
 
 
 
