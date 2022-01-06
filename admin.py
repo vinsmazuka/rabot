@@ -30,6 +30,23 @@ class AdmMessanger:
         lbl.pack()
         root.mainloop()
 
+    @staticmethod
+    def show_messages(messages):
+        """
+        выводит окно с сообщениями для администратора
+        :param messages - кортеж из сообщений в формате str
+        """
+        root = tkinter.Toplevel()
+        root.title('Не корректный формат данных:')
+        root.geometry("1200x400")
+        for i, value in enumerate(messages):
+            locals()['lbl' + str(i)] = tkinter.Label(root,
+                                                     text=value,
+                                                     font="Arial 10",
+                                                     )
+            locals()['lbl' + str(i)].pack(anchor="w")
+        root.mainloop()
+
 
 def add_worker(data):
     """
@@ -38,16 +55,7 @@ def add_worker(data):
     если data - кортеж
     """
     if isinstance(data, tuple):
-        root = tkinter.Toplevel()
-        root.title('Не корректный формат данных:')
-        root.geometry("1200x400")
-        for i, value in enumerate(data):
-            locals()['lbl' + str(i)] = tkinter.Label(root,
-                                                     text=value,
-                                                     font="Arial 10",
-                                                     )
-            locals()['lbl' + str(i)].pack(anchor="w")
-        root.mainloop()
+        AdmMessanger.show_messages(data)
     else:
         DbWriter.write_worker(data)
 
@@ -59,25 +67,22 @@ def add_schedule(data):
     если data - кортеж
     """
     if isinstance(data, tuple):
-        root = tkinter.Toplevel()
-        root.title('Не корректный формат данных:')
-        root.geometry("1200x400")
-        for i, value in enumerate(data):
-            locals()['lbl' + str(i)] = tkinter.Label(root,
-                                                     text=value,
-                                                     font="Arial 10",
-                                                     )
-            locals()['lbl' + str(i)].pack(anchor="w")
-        root.mainloop()
+        AdmMessanger.show_messages(data)
     else:
         DbWriter.write_schedule(data)
 
 
-def workers_write_file(data):
-    if data is None:
+def write_file_csv(func):
+    """
+    записывает данные в CSV-файл,
+    выводит окно с сообщением для администратора
+    :param func: - функция, которая записывает данные
+    в файл и возвращает сообщение в формате str
+    """
+    if func is None:
         pass
     else:
-        AdmMessanger.show_message(data)
+        AdmMessanger.show_message(func)
 
 
 def menu():
@@ -112,8 +117,8 @@ def menu():
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: workers_write_file(CsvWriter.write_worker
-                                                               (easygui.fileopenbox(), DbLoader.load_workers())))
+                            command=lambda: write_file_csv(CsvWriter.write_worker
+                                                           (easygui.fileopenbox(), DbLoader.load_workers())))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
