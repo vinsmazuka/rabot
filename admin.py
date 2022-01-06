@@ -59,8 +59,8 @@ class AdmMessanger:
         def save():
             """
             сохраняет месяц, выбранный администратором из списка data
-            и передает его в метод del_schedule класса DbEraser для удаления
-            из БД, открывает окно с сообщением для администратора
+            и передает его значение в метод del_schedule класса DbEraser для удаления
+            из БД, хатем открывает окно с сообщением для администратора
             """
             nonlocal root, selector, selected_month
             user_input = selector.curselection()[0]
