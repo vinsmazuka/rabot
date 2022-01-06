@@ -86,10 +86,6 @@ class Schedule(Base):
     worker = relationship("Worker", backref="schedules", cascade="all,delete")
 
 
-# Base.metadata.create_all(engine)
-# Base.metadata.drop_all(engine)
-
-
 class CsvReader:
     """
     Предназначен для чтения данных из CSV файла
@@ -307,7 +303,6 @@ class DbFormatter:
         logger.info("данные из файла не соответствуют формату") if \
             len(errors) > 0 or data == '' \
             else logger.info("данные соответствуют формату")
-
         return tuple(errors) if len(errors) > 0 else result
 
 
@@ -379,11 +374,31 @@ class DbLoader:
         logger.info('подгружены id сотрудников из таблицы "workers" БД')
         return id_list
 
+    @staticmethod
+    def load_workers():
+        """
+        Подгружает таблицу "workers" из БД,
+        возращает список, каждый элемент списка
+        содержит информацию об отдельном сотруднике
+        в виде словаря
+        """
+        q = session.query(Worker)
+        result = []
+        for element in q:
+            item = vars(element)
+            del item['_sa_instance_state']
+            result.append(item)
+        logger.info('подгружена таблица "workers" из БД')
+        return result
+
 
 if __name__ == "__main__":
-    x = DbFormatter.format_schedule(CsvReader.read_file(easygui.fileopenbox("укажите путь к файлу")),
-                                    DbLoader.load_workers_id())
-    DbWriter.write_schedule(x)
+    DbLoader.load_workers()
+# #     Base.metadata.create_all(engine)
+#     # Base.metadata.drop_all(engine)
+# #     # x = DbFormatter.format_schedule(,
+# #     #                                 DbLoader.load_workers_id())
+# #     # # DbWriter.write_schedule(x)
 
 
 
