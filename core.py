@@ -539,7 +539,31 @@ class DbEraser:
         return message
 
 
-# if __name__ == "__main__":
+class DbChanger:
+    """
+    Предназначен для обновления данных в БД
+    """
+    pass
+
+    @staticmethod
+    def change_status(worker_id, new_value):
+        """
+        Меняет старое значение в БД в столбце "status" на новое
+        :param worker_id: id сотрудника(тип int)
+        :param new_value: новое значение(тип Boolean)
+        :return: сообщение о произведенных изменениях(тип str)
+        """
+        q = session.query(Worker).filter(Worker.id == worker_id).one()
+        q.status = new_value
+        session.add(q)
+        session.commit()
+        message = f'статус сотрудника {worker_id} в БД был изменен на {new_value}'
+        logger.info(f'статус сотрудника {worker_id} в БД был изменен на {new_value}')
+        return message
+
+
+if __name__ == "__main__":
+    print(DbChanger.change_status(1, True))
 #     # Base.metadata.create_all(engine)
 #     # Base.metadata.drop_all(engine)
 
