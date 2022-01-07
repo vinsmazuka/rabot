@@ -59,8 +59,8 @@ class AdmMessanger:
         def save():
             """
             сохраняет месяц, выбранный администратором из списка data
-            и передает его значение в метод del_schedule класса DbEraser для удаления
-            из БД, хатем открывает окно с сообщением для администратора
+            и передает его данные в метод del_schedule класса DbEraser для удаления
+            из БД, затем открывает окно с сообщением для администратора
             """
             nonlocal root, selector, selected_month
             user_input = selector.curselection()[0]
@@ -70,7 +70,46 @@ class AdmMessanger:
 
         selected_month = ()
         root = tkinter.Toplevel()
-        root.title('Выберите 1 месяц из предложенных')
+        root.title('Выберите 1 месяц из списка')
+        root.geometry("400x600")
+        selector = tkinter.Listbox(root, height=len(data))
+        for element in data:
+            selector.insert(tkinter.END, element)
+        btn = tkinter.Button(root,
+                             text="save",
+                             width=23,
+                             height=3,
+                             bg="white",
+                             fg="blue",
+                             command=lambda: save())
+        selector.pack()
+        btn.pack()
+        root.mainloop()
+
+    @staticmethod
+    def worker_selector(data):
+        """
+        открывает окно, в котором администратор может выбрать сотрудника
+        из списка
+        :param data: список состоящий из кортежей, каждый кортеж состоит из
+        3 элементов: 1 - элемент - id сотрудника в БД, 2 - фамилия сотрудника,
+        3 - имя сотрудника
+        """
+        def save():
+            """
+            сохраняет сотрудника, выбранного администратором из списка data
+            и передает его данные в метод del_worker класса DbEraser для удаления
+            из БД, затем открывает окно с сообщением для администратора
+            """
+            nonlocal root, selector, selected_worker
+            user_input = selector.curselection()[0]
+            selected_worker = selector.get(user_input)
+            root.destroy()
+            AdmMessanger.show_message(DbEraser.del_worker(selected_worker[0]))
+
+        selected_worker = ()
+        root = tkinter.Toplevel()
+        root.title('Выберите сотрудника из списка')
         root.geometry("400x600")
         selector = tkinter.Listbox(root, height=len(data))
         for element in data:
@@ -193,7 +232,8 @@ def menu():
 
 
 if __name__ == "__main__":
-    menu()
+    AdmMessanger.worker_selector(DbLoader.load_workers())
+    # menu()
 
 
 
