@@ -32,6 +32,7 @@ class Worker(Base):
     deployment_date = Column(Date(), nullable=False)
     birthday = Column(Date(), nullable=False)
     status = Column(Boolean, nullable=False)
+    schedule = relationship("Schedule", backref="workers", cascade="all,delete")
 
     def __str__(self):
         return (f'{self.id}, {self.name}, {self.surname}, {self.patronymic}, '
@@ -82,7 +83,6 @@ class Schedule(Base):
     hours = Column(Float(50), nullable=True)
     wage = Column(Float(50), nullable=True)
     worker_id = Column(Integer, ForeignKey('workers.id'))
-    worker = relationship("Worker", backref="schedules", cascade="all,delete")
 
 
 class CsvReader:
@@ -539,10 +539,9 @@ class DbEraser:
         return message
 
 
-if __name__ == "__main__":
-    print(DbEraser.del_worker(7))
-    # Base.metadata.create_all(engine)
-    # Base.metadata.drop_all(engine)
+# if __name__ == "__main__":
+#     # Base.metadata.create_all(engine)
+#     # Base.metadata.drop_all(engine)
 
 
 
