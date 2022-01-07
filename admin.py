@@ -58,7 +58,7 @@ class AdmMessanger:
         """
         def save():
             """
-            сохраняет месяц, выбранный администратором из списка data
+            возвращает месяц, выбранный администратором из списка data
             и передает его данные в метод del_schedule класса DbEraser для удаления
             из БД, затем открывает окно с сообщением для администратора
             """
@@ -97,7 +97,7 @@ class AdmMessanger:
         """
         def save():
             """
-            сохраняет сотрудника, выбранного администратором из списка data
+            возвращает сотрудника, выбранного администратором из списка data
             и передает его данные в метод del_worker класса DbEraser для удаления
             из БД, затем открывает окно с сообщением для администратора
             """
@@ -222,18 +222,26 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: AdmMessanger.month_selector(DbLoader.load_months()))
+    btn_m5 = tkinter.Button(main_window,
+                            text="Удалить сотрудника\n"
+                                 "из БД",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: AdmMessanger.worker_selector(DbLoader.load_workers()))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
     btn_m2.place(relx=0.00001, rely=0.24)
     btn_m3.place(relx=0.00001, rely=0.33)
     btn_m4.place(relx=0.00001, rely=0.42)
+    btn_m5.place(relx=0.00001, rely=0.51)
     main_window.mainloop()
 
 
 if __name__ == "__main__":
-    AdmMessanger.worker_selector(DbLoader.load_workers())
-    # menu()
+    menu()
 
 
 
