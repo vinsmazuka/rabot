@@ -557,8 +557,8 @@ class DbChanger:
         q.status = new_value
         session.add(q)
         session.commit()
-        message = f'статус сотрудника {worker_id} в БД был изменен на {new_value}'
-        logger.info(f'статус сотрудника {worker_id} в БД был изменен на {new_value}')
+        message = f'статус сотрудника с Id "{worker_id}" в БД был изменен на "{new_value}"'
+        logger.info(f'статус сотрудника с Id "{worker_id}" в БД был изменен на "{new_value}"')
         return message
 
 
