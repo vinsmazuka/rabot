@@ -483,6 +483,20 @@ class DbLoader:
         sorted_result = (sorted(result_list, key=lambda x: x[1], reverse=True))
         return sorted_result
 
+    @staticmethod
+    def load_workers():
+        """
+        Подгружает столбцы "id", "surname", "name" из таблицы "workers" из БД'
+        """
+        result_list = []
+        q = session.query(Worker)
+        for element in q:
+            row = (element.id, element.surname, element.name)
+            result_list.append(row)
+        logger.info('подгружены столбцы "id", "surname", '
+                    '"name" из таблицы "workers" из БД')
+        return result_list
+
 
 class DbEraser:
     """
@@ -509,7 +523,7 @@ class DbEraser:
 
 
 if __name__ == "__main__":
-    print(DbLoader.load_months())
+    print(DbLoader.load_workers())
     # Base.metadata.create_all(engine)
     # Base.metadata.drop_all(engine)
 
