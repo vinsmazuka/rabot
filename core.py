@@ -519,11 +519,28 @@ class DbEraser:
         session.commit()
         message = (f'все строки из таблицы "schedule" в БД, '
                    f'в которых месяц = {month} и год = {year} были удалены')
+        logger.info(f'все строки из таблицы "schedule" в БД, '
+                   f'в которых месяц = {month} и год = {year} были удалены')
+        return message
+
+    @staticmethod
+    def del_worker(worker_id):
+        """
+        удаляет из таблицы "workers" из БД все строки,
+        в которых поле id = введенному значению аргумента worker_id,
+        :param worker_id: уникальный id сотрудника в БД, тип - int
+        :return: возвращает сообщение об удаленных данных
+        """
+        q = session.query(Worker).filter(Worker.id == worker_id).one()
+        session.delete(q)
+        session.commit()
+        message = f'сотрудник с id {worker_id} был удален из БД'
+        logger.info(f'сотрудник с id {worker_id} был удален из БД')
         return message
 
 
 if __name__ == "__main__":
-    print(DbLoader.load_workers())
+    print(DbEraser.del_worker(7))
     # Base.metadata.create_all(engine)
     # Base.metadata.drop_all(engine)
 
