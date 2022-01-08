@@ -71,11 +71,22 @@ class Sendler:
 
 
 def autorize_func(username, chat_id):
+    """
+    проверяет, внесен ли пользователь username в БД
+    и открыт ли у него к ней доступ
+    :param username: username пользователя в телеграмме,
+    :param chat_id: chat.id с пользователем в телеграмме
+    :return: True, если пользователь есть в БД и ему разрешен доступ /
+    False, если пользователя нет в БД или админ заблокировал
+    ему доступ(тип - Boolean)
+    """
     if not DbLoader.load_users():
+        logger.info(f'пользователь"{username}" не прошел авторизацию')
         return False
     else:
         for element in DbLoader.load_users():
             if username in element and element[2] is True:
+                logger.info(f'пользователь"{username}" прошел авторизацию')
                 if str(chat_id) in element:
                     return True
                     break
@@ -83,6 +94,8 @@ def autorize_func(username, chat_id):
                     DbChanger.change_chat_id(username, chat_id)
                     return True
                     break
+        logger.info(f'пользователь"{username}" не прошел авторизацию')
+        return False
 
 
 @bot.message_handler(commands=['start'])
@@ -91,7 +104,7 @@ def send_main_menu(message):
     проверяет, авторизован ли пользователь,
     отвечает пользователю"""
     logger.info(f'пользователь"{message.from_user.username}" '
-                f'написал боту ссобщение')
+                f'написал боту сообщение')
     authorization = autorize_func(message.from_user.username, message.chat.id)
     if not authorization:
         bot.send_message(message.chat.id, 'Вы не авторизованы, обратитесь к администратору')
