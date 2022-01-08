@@ -2,7 +2,7 @@ import tkinter
 import easygui
 import rabot
 import app_logger
-from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter
+from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger
 from core import Worker, Schedule, DbEraser
 
 logger = app_logger.get_logger(__name__)
@@ -106,6 +106,46 @@ class AdmMessanger:
             selected_worker = selector.get(user_input)
             root.destroy()
             AdmMessanger.show_message(DbEraser.del_worker(selected_worker[0]))
+
+        selected_worker = ()
+        root = tkinter.Toplevel()
+        root.title('Выберите сотрудника из списка')
+        root.geometry("400x600")
+        selector = tkinter.Listbox(root, height=len(data))
+        for element in data:
+            selector.insert(tkinter.END, element)
+        btn = tkinter.Button(root,
+                             text="save",
+                             width=23,
+                             height=3,
+                             bg="white",
+                             fg="blue",
+                             command=lambda: save())
+        selector.pack()
+        btn.pack()
+        root.mainloop()
+
+    @staticmethod
+    def set_status(data):
+        """
+        открывает окно, в котором администратор может выбрать сотрудника
+        из списка
+        :param data: список состоящий из кортежей, каждый кортеж состоит из
+        3 элементов: 1 - элемент - id сотрудника в БД, 2 - фамилия сотрудника,
+        3 - имя сотрудника
+        """
+        def save(status=False):
+            """
+            возвращает сотрудника, выбранного администратором из списка data
+            и передает его данные в метод change_status класса DbChanger для
+            изменения поля "status" по сотруднику в БД,
+            затем открывает окно с сообщением для администратора
+            """
+            nonlocal root, selector, selected_worker
+            user_input = selector.curselection()[0]
+            selected_worker = selector.get(user_input)
+            root.destroy()
+            AdmMessanger.show_message(DbChanger.change_status(selected_worker[0], status))
 
         selected_worker = ()
         root = tkinter.Toplevel()
@@ -230,6 +270,13 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: AdmMessanger.delete_worker(DbLoader.load_workers()))
+    btn_m6 = tkinter.Button(main_window,
+                            text="Заблокировать сотрудника",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: AdmMessanger.set_status(DbLoader.load_workers()))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
@@ -237,6 +284,7 @@ def menu():
     btn_m3.place(relx=0.00001, rely=0.33)
     btn_m4.place(relx=0.00001, rely=0.42)
     btn_m5.place(relx=0.00001, rely=0.51)
+    btn_m6.place(relx=0.00001, rely=0.60)
     main_window.mainloop()
 
 
