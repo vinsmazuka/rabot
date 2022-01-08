@@ -578,6 +578,22 @@ class DbChanger:
         logger.info(f'статус сотрудника с Id "{worker_id}" в БД был изменен на "{new_value}"')
         return message
 
+    @staticmethod
+    def change_chat_id(username, chat_id):
+        """
+        записывает в таблицу "workers" значение аргумента chat_id
+        для строки, в которой значение поля "username" = значению
+        указанного аргумента username
+        :param username: - username пользователя в телеграмме(тип str)
+        :param chat_id: - chat.id с пользователем в телеграмме(тип str)
+        """
+        q = session.query(Worker).filter(Worker.username == username).one()
+        q.chat_id = chat_id
+        session.add(q)
+        session.commit()
+        logger.info(f'значение "{chat_id}" было записано для '
+                    f'пользователя "{username}" в таблицу "workers" в БД')
+
 
 if __name__ == "__main__":
     print(DbLoader.load_users())
