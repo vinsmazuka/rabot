@@ -88,9 +88,23 @@ def send_main_menu(message):
 
 
 @bot.callback_query_handler(func=lambda call: True)
-def user_answer(call):
+def user_answer1(call):
+    """
+    Перехватывает ответ пользователя из
+    функции send_main_menu и обрабатывает его, отправляя
+    пользователю ответ
+    """
     if call.data == 'schedule':
+        btn_dict = {}
+        for i, val in enumerate(DbLoader.load_months()):
+            inline_keyboard = telebot.types.InlineKeyboardMarkup(row_width=3)
+            btn_dict['btn' + str(i)] = telebot.types.InlineKeyboardButton(text=f'{val[0]}-{val[1]}',
+                                                                          callback_data=f'{val[0]}-{val[1]}')
 
+        inline_keyboard.add(*btn_dict.values())
+        bot.send_message(call.message.chat.id, 'Выберите месяц:', reply_markup=inline_keyboard)
+        logger.info(f'бот отправил пользователю '
+                    f'"{call.message.from_user.username}" сообщение')
 
 
 if __name__ == "__main__":
