@@ -468,18 +468,35 @@ class DbLoader:
         return result
 
     @staticmethod
-    def load_months():
+    def load_months(username=None):
         """
-        Подгружает столбцы "month" и "year" из таблицы "schedule" БД
+        Подгружает столбцы "month" и "year" из таблицы "schedule" БД для
+        всех всех работников, если параметр username, не указан,
+        либо только для работника, у которого значение поля "username"
+        равно значениею аргумента username, если аргумент username был указан
+        :param username: - username работника в телеграмме(тип - str)
+        :return: список кортежей, каждый кортеж ссотоит из 2 элементов:
+        1-название месяца, 2-год, соответствующий месяцу
         """
         result_list = []
         q = session.query(Schedule)
-        for element in q:
-            row = (element.month, element.year)
-            if row not in result_list:
-                result_list.append(row)
-        logger.info('подгружены столбцы "month" и "year" из таблицы "schedule" БД')
-        sorted_result = (sorted(result_list, key=lambda x: x[1], reverse=True))
+        if username is None:
+            for element in q:
+                row = (element.month, element.year)
+                if row not in result_list:
+                    result_list.append(row)
+            logger.info('подгружены столбцы "month" и "year" из таблицы "schedule" БД')
+            sorted_result = (sorted(result_list, key=lambda x: x[1], reverse=True))
+        else:
+            for element in q:
+                if element.workers.username == username:
+                    row = (element.month, element.year)
+                    if row not in result_list:
+                        result_list.append(row)
+            logger.info(f'подгружены столбцы "month" и "year" для пользователя '
+                        f'{username} из таблицы "schedule" БД')
+            sorted_result = (sorted(result_list, key=lambda x: x[1], reverse=True))
+
         return sorted_result
 
     @staticmethod
@@ -606,7 +623,7 @@ class DbChanger:
 
 
 if __name__ == "__main__":
-    print((DbLoader.load_schedules('vinsmazuka')))
+    print((DbLoader.load_months('firmamento_89')))
 # #     # Base.metadata.create_all(engine)
 # #     # Base.metadata.drop_all(engine)
 
