@@ -74,12 +74,23 @@ def send_main_menu(message):
                 pass
     if not authorization:
         bot.send_message(message.chat.id, 'Вы не авторизованы, обратитесь к администратору')
-        logger.info(f'бот отправил пользоветлю '
+        logger.info(f'бот отправил пользователю '
                     f'"{message.from_user.username}" сообщение')
     else:
-        bot.send_message(message.chat.id, 'Добрый день, авторизация прошла успешно')
-        logger.info(f'бот отправил пользоветлю '
+        inline_keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
+        btn_schedule = telebot.types.InlineKeyboardButton(text="график работы", callback_data='schedule')
+        btn_personalities = telebot.types.InlineKeyboardButton(text="личные данные", callback_data='personalities')
+        btn_url = telebot.types.InlineKeyboardButton(text="сайт организации", url='https://www.python.org')
+        inline_keyboard.add(btn_schedule, btn_personalities, btn_url)
+        bot.send_message(message.chat.id, 'Выберите опцию:', reply_markup=inline_keyboard)
+        logger.info(f'бот отправил пользователю '
                     f'"{message.from_user.username}" сообщение')
+
+
+@bot.callback_query_handler(func=lambda call: True)
+def user_answer(call):
+    if call.data == 'schedule':
+
 
 
 if __name__ == "__main__":
