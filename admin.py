@@ -49,7 +49,7 @@ class AdmMessanger:
         root.mainloop()
 
     @staticmethod
-    def month_selector(data):
+    def delete_month(data):
         """
         открывает окно, в котором администратор может выбрать месяц,
         который будет удален из бызы данных
@@ -221,7 +221,7 @@ def menu():
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: AdmMessanger.month_selector(DbLoader.load_months()))
+                            command=lambda: AdmMessanger.delete_month(DbLoader.load_months()))
     btn_m5 = tkinter.Button(main_window,
                             text="Удалить сотрудника\n"
                                  "из БД",
