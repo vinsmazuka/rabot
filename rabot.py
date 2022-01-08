@@ -1,6 +1,7 @@
 import telebot
 import app_logger
 from botconfig import bot_configuration
+from core import DbLoader, DbChanger
 
 
 logger = app_logger.get_logger(__name__)
@@ -37,29 +38,48 @@ class Sendler:
         message
         пользователям из словаря unblock_users.
         В словаре unblock_users ключ - username пользователя
-        в телеграмме, значение - chat.id с пользователем.
-        Функция реализована как рекурсивная, чтобы обойти
-        ошибку, связанную с тем, что некоторые пользователи
-        могли заблокировать бота, данные пользователи не получат
-        сообщение
+        в телеграмме, значение - chat.id с пользователем
         """
         for key, value in users_dict.items():
             try:
                 bot.send_message(chat_id=value, text=message)
                 logger.info(f'Сообщение "{message}" было отправлено '
-                             f'пользователю {key} ')
+                            f'пользователю {key} ')
+
             except telebot.apihelper.ApiTelegramException:
                 logger.exception(f'Бот не смог доставить пользователю {key} '
-                              f'сообщение "{message}"')
+                                 f'сообщение "{message}"')
 
 
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
-    if message.from_user.username in list(users.keys()):
-        bot.send_message(message.chat.id, 'Приветики, тебя добавили в друзья бота:)')
-        users[message.from_user.username] = str(message.chat.id)
+def send_main_menu(message):
+    """перехватывает сообщения от пользователя,
+    проверяет, авторизован ли пользователь,
+    отвечает пользователю"""
+    logger.info(f'пользователь"{message.from_user.username}" '
+                f'написал боту ссобщение')
+    authorization = False
+    if not DbLoader.load_users():
+        pass
     else:
-        bot.send_message(message.chat.id, 'Вы не авторизованы, обратитесь к Администратору')
+        for element in DbLoader.load_users():
+            if message.from_user.username in element and element[2] is True:
+                authorization = True
+                if str(message.chat.id) in element:
+                    break
+                else:
+                    DbChanger.change_chat_id(message.from_user.username, message.chat.id)
+                    break
+            else:
+                pass
+    if not authorization:
+        bot.send_message(message.chat.id, 'Вы не авторизованы, обратитесь к администратору')
+        logger.info(f'бот отправил пользоветлю '
+                    f'"{message.from_user.username}" сообщение')
+    else:
+        bot.send_message(message.chat.id, 'Добрый день, авторизация прошла успешно')
+        logger.info(f'бот отправил пользоветлю '
+                    f'"{message.from_user.username}" сообщение')
 
 
 if __name__ == "__main__":
