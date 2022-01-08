@@ -6,7 +6,6 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine, Float
-import easygui
 import app_logger
 
 logger = app_logger.get_logger(__name__)
@@ -514,6 +513,17 @@ class DbLoader:
                     '"status" из таблицы "workers" из БД')
         return result_list
 
+    @staticmethod
+    def load_schedules(username):
+        """
+        Подгружает из БД график работы пользователя username из таблицы schedule
+        все месяцы
+        :param username: телеграмм id пользователя(тип str)
+        :return: список объектов класса Schedule(тип - list)
+        """
+        q = session.query(Worker).filter(Worker.username == username)
+        return q[0].schedule
+
 
 class DbEraser:
     """
@@ -596,7 +606,7 @@ class DbChanger:
 
 
 if __name__ == "__main__":
-    print(DbLoader.load_users())
+    print((DbLoader.load_schedules('vinsmazuka')))
 # #     # Base.metadata.create_all(engine)
 # #     # Base.metadata.drop_all(engine)
 
