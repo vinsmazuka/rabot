@@ -87,7 +87,7 @@ class AdmMessanger:
         root.mainloop()
 
     @staticmethod
-    def worker_selector(data):
+    def delete_worker(data):
         """
         открывает окно, в котором администратор может выбрать сотрудника
         из списка
@@ -229,7 +229,7 @@ def menu():
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: AdmMessanger.worker_selector(DbLoader.load_workers()))
+                            command=lambda: AdmMessanger.delete_worker(DbLoader.load_workers()))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
