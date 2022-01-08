@@ -497,6 +497,23 @@ class DbLoader:
                     '"name" из таблицы "workers" из БД')
         return result_list
 
+    @staticmethod
+    def load_users():
+        """
+        подгружает поля "username", "chat_id",
+        "status" из таблицы "workers" БД
+        :return: список кортежей, каждый кортеж - содержит
+        информацию об отдельном пользователе
+        """
+        result_list = []
+        q = session.query(Worker)
+        for element in q:
+            row = (element.username, element.chat_id, element.status)
+            result_list.append(row)
+        logger.info('подгружены столбцы "username", "chat_id", '
+                    '"status" из таблицы "workers" из БД')
+        return result_list
+
 
 class DbEraser:
     """
@@ -563,9 +580,9 @@ class DbChanger:
 
 
 if __name__ == "__main__":
-    print(DbChanger.change_status(1, True))
-#     # Base.metadata.create_all(engine)
-#     # Base.metadata.drop_all(engine)
+    print(DbLoader.load_users())
+# #     # Base.metadata.create_all(engine)
+# #     # Base.metadata.drop_all(engine)
 
 
 
