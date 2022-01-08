@@ -618,14 +618,14 @@ class DbChanger:
         q.chat_id = chat_id
         session.add(q)
         session.commit()
-        logger.info(f'значение "{chat_id}" было записано для '
+        logger.info(f'значение "chat_id" "{chat_id}" было записано для '
                     f'пользователя "{username}" в таблицу "workers" в БД')
 
 
-if __name__ == "__main__":
-    print((DbLoader.load_months('firmamento_89')))
-# #     # Base.metadata.create_all(engine)
-# #     # Base.metadata.drop_all(engine)
+# if __name__ == "__main__":
+#     print((DbLoader.load_months('firmamento_89')))
+# # #     # Base.metadata.create_all(engine)
+# # #     # Base.metadata.drop_all(engine)
 
 
 
