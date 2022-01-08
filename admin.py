@@ -126,22 +126,25 @@ class AdmMessanger:
         root.mainloop()
 
     @staticmethod
-    def set_status(data):
+    def set_status(data, status=False):
         """
         открывает окно, в котором администратор может выбрать сотрудника
         из списка
         :param data: список состоящий из кортежей, каждый кортеж состоит из
         3 элементов: 1 - элемент - id сотрудника в БД, 2 - фамилия сотрудника,
         3 - имя сотрудника
+        :param status: значение, которое необходимо утановить в БД в поле
+        "status" в таблице "workers" по сотруднику
         """
-        def save(status=False):
+        def save():
             """
             возвращает сотрудника, выбранного администратором из списка data
-            и передает его данные в метод change_status класса DbChanger для
+            и передает его данные и значение аргумента status
+            в метод change_status класса DbChanger для
             изменения поля "status" по сотруднику в БД,
             затем открывает окно с сообщением для администратора
             """
-            nonlocal root, selector, selected_worker
+            nonlocal root, selector, selected_worker, status
             user_input = selector.curselection()[0]
             selected_worker = selector.get(user_input)
             root.destroy()
@@ -277,6 +280,13 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: AdmMessanger.set_status(DbLoader.load_workers()))
+    btn_m7 = tkinter.Button(main_window,
+                            text="Разблокировать сотрудника",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: AdmMessanger.set_status(DbLoader.load_workers(), True))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
@@ -285,6 +295,7 @@ def menu():
     btn_m4.place(relx=0.00001, rely=0.42)
     btn_m5.place(relx=0.00001, rely=0.51)
     btn_m6.place(relx=0.00001, rely=0.60)
+    btn_m7.place(relx=0.00001, rely=0.69)
     main_window.mainloop()
 
 
