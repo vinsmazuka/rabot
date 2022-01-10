@@ -703,7 +703,7 @@ class DbChanger:
         session.add(q)
         session.commit()
         message = f'статус сотрудника с Id "{worker_id}" в БД был изменен на "{new_value}"'
-        logger.info(f'статус сотрудника с Id "{worker_id}" в БД был изменен на "{new_value}"')
+        logger.info(message)
         return message
 
     @staticmethod
@@ -722,8 +722,29 @@ class DbChanger:
         logger.info(f'значение "chat_id" "{chat_id}" было записано для '
                     f'пользователя "{username}" в таблицу "workers" в БД')
 
+    @staticmethod
+    def changestatus_request(worker_id, new_value):
+        """
+        изменяет статус заявки сотрудника на выдачу ТК в БД
+        :param worker_id: кортеж id работников, подавших заявку(тип - tuple)
+        :param new_value: Новое значение(тип Boolean)
+        :return: список сообщений для администратора(тип - список)
+        """
+        messages = []
+        for item in worker_id:
+
+            q = session.query(Requests).filter(Requests.worker_id == item).one()
+            q.status = new_value
+            session.add(q)
+            message = f'статус заявки сотрудника с Id "{item}"  был изменен на "{new_value}" в БД'
+            messages.append(message)
+            logger.info(message)
+        session.commit()
+        return messages
+
 
 # if __name__ == "__main__":
+#     print(DbChanger.changestatus_request((1, 2), False))
 #     print(DbLoader.load_requests())
 #     Base.metadata.create_all(engine)
 #     Base.metadata.drop_all(engine)
