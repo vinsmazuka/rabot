@@ -217,7 +217,11 @@ class DbFormatter:
         """
         if data is None:
             return None
+        elif not data:
+            message = ('структура данных в файле не соответсвует требованиям, либо файл пустой',)
+            return message
         else:
+            print(data)
             warnings = []
             result = []
             today = datetime.now().date()
@@ -312,6 +316,9 @@ class DbFormatter:
         """
         if data is None:
             return None
+        elif not data:
+            message = ('структура данных в файле не соответсвует требованиям, либо файл пустой',)
+            return message
         else:
             now_year = datetime.now().year
             months = ['январь', 'февраль', 'март',
@@ -673,9 +680,9 @@ class DbChanger:
                     f'пользователя "{username}" в таблицу "workers" в БД')
 
 
-if __name__ == "__main__":
-    Base.metadata.create_all(engine)
-    # Base.metadata.drop_all(engine)
+# if __name__ == "__main__":
+#     Base.metadata.create_all(engine)
+#     Base.metadata.drop_all(engine)
 
 
 
