@@ -619,6 +619,29 @@ class DbLoader:
                     f'username "{username}" из БД')
         return q[0]
 
+    @staticmethod
+    def load_requests():
+        """
+        подгружает из БД не исполненные запросы
+        на изготовление копии ТК, поступившие от сотрудников
+        :return: список словарей, каждый словарь содержит
+        иноформацию о запросе и пользователе, который его сделал
+        """
+        q = session.query(Worker, Requests).filter(Worker.id == Requests.id)
+        result_list = []
+        for request in q:
+            if not request.Requests.status:
+                row = dict()
+                row['id'] = request.Worker.id
+                row['surname'] = request.Worker.surname
+                row['name'] = request.Worker.name
+                row['quantity'] = request.Requests.quantity
+                row['time'] = request.Requests.time.strftime('%H:%M-%d.%m.%Y')
+                row['req_status'] = request.Requests.status
+                row['username'] = request.Worker.username
+                result_list.append(row)
+        return result_list
+
 
 class DbEraser:
     """
@@ -701,6 +724,7 @@ class DbChanger:
 
 
 # if __name__ == "__main__":
+#     print(DbLoader.load_requests())
 #     Base.metadata.create_all(engine)
 #     Base.metadata.drop_all(engine)
 
