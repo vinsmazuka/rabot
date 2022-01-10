@@ -1,3 +1,4 @@
+from datetime import datetime
 import telebot
 import app_logger
 from botconfig import bot_configuration
@@ -25,7 +26,7 @@ class Formatter:
         :param schedule: - объект класса Schedule
         :return: str
         """
-        message = (f'{schedule.month}-{schedule.year}:\n'
+        message = (f'{schedule.month} {schedule.year}:\n'
                    f'1:   {schedule.d1}\n2:   {schedule.d2}\n3:   {schedule.d3}\n'
                    f'4:   {schedule.d4}\n5:   {schedule.d5}\n6:   {schedule.d6}\n'
                    f'7:   {schedule.d7}\n8:   {schedule.d8}\n9:   {schedule.d9}\n'
@@ -39,7 +40,22 @@ class Formatter:
                    f'31: {schedule.d31}\n'
                    f'отработанные часы: {schedule.hours}\n'
                    f'зарплата: {schedule.wage}')
-        logger.info(f'Объект "{schedule}" был отформатирован для отправки пользователю')
+        logger.info(f'График за {schedule.month} {schedule.year} был отформатирован для отправки пользователю')
+        return message
+
+    @staticmethod
+    def format_personalities(worker):
+        """
+        форматирует объект  worker данные для отправки
+        персональных данных пользователю
+        :param worker: объект класса Worker
+        :return: str
+        """
+        message = (f'ФИО: {worker.surname} {worker.name} {worker.patronymic}\n'
+                   f'Дата рождения: {worker.birthday.strftime("%d.%m.%Y")}\n'
+                   f'Дата трудоустройства: {worker.deployment_date.strftime("%d.%m.%Y")}\n'
+                   f'Оклад: {worker.salary}')
+        logger.info(f'Объект "{worker}" был отформатирован для отправки пользователю')
         return message
 
 
@@ -104,12 +120,12 @@ def send_main_menu(message):
     проверяет, авторизован ли пользователь,
     отвечает пользователю"""
     logger.info(f'пользователь"{message.from_user.username}" '
-                f'написал боту сообщение')
+                f'запросил у бота главное меню')
     authorization = autorize_func(message.from_user.username, message.chat.id)
     if not authorization:
         bot.send_message(message.chat.id, 'Вы не авторизованы, обратитесь к администратору')
         logger.info(f'бот отправил пользователю '
-                    f'"{message.from_user.username}" сообщение')
+                    f'"{message.from_user.username}" сообщение о том, что он не авторизован')
     else:
         inline_keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
         btn_schedule = telebot.types.InlineKeyboardButton(text="график работы", callback_data='schedule')
@@ -118,7 +134,7 @@ def send_main_menu(message):
         inline_keyboard.add(btn_schedule, btn_personalities, btn_url)
         bot.send_message(message.chat.id, 'Выберите опцию:', reply_markup=inline_keyboard)
         logger.info(f'бот отправил пользователю '
-                    f'"{message.from_user.username}" сообщение')
+                    f'"{message.from_user.username}" гланое меню')
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -128,29 +144,36 @@ def user_answer(call):
     функции send_main_menu и обрабатывает его, отправляя
     пользователю ответ
     """
+    logger.info(f'пользователь "{call.from_user.username}" запросил {call.data}')
     authorization = autorize_func(call.from_user.username, call.message.chat.id)
     if not authorization:
         bot.send_message(call.message.chat.id, 'Вы не авторизованы, обратитесь к администратору')
         logger.info(f'бот отправил пользователю '
-                    f'"{call.from_user.username}" сообщение')
+                    f'"{call.from_user.username}" сообщение о том, что он не авторизован')
     elif call.data == 'schedule':
         btn_dict = {}
         for i, val in enumerate(DbLoader.load_months(call.from_user.username)):
             inline_keyboard = telebot.types.InlineKeyboardMarkup(row_width=3)
-            btn_dict['btn' + str(i)] = telebot.types.InlineKeyboardButton(text=f'{val[0]}-{val[1]}',
-                                                                          callback_data=f'{val[0]}-{val[1]}')
+            btn_dict['btn' + str(i)] = telebot.types.InlineKeyboardButton(text=f'{val[0]} {val[1]}',
+                                                                          callback_data=f'{val[0]} {val[1]}')
         try:
             inline_keyboard.add(*btn_dict.values())
             bot.send_message(call.message.chat.id, 'Выберите месяц:', reply_markup=inline_keyboard)
             logger.info(f'бот отправил пользователю '
-                        f'"{call.from_user.username}" сообщение')
+                        f'"{call.from_user.username}" меню с выбором месяца')
         except UnboundLocalError:
             bot.send_message(call.message.chat.id, 'У вас нет доступных графиков работы')
             logger.info(f'бот отправил пользователю '
-                        f'"{call.from_user.username}" сообщение')
+                        f'"{call.from_user.username}" сообщение об отсутсвии по нему '
+                        f'доступных графиков работы')
+    elif call.data == 'personalities':
+        bot.send_message(call.message.chat.id, Formatter.
+                         format_personalities(DbLoader.load_worker(call.from_user.username)))
+        logger.info(f'бот отправил пользователю '
+                    f'"{call.from_user.username}" персональные данные')
     else:
         try:
-            month, year = call.data.split('-')
+            month, year = call.data.split(' ')
         except ValueError:
             pass
         else:
@@ -159,7 +182,7 @@ def user_answer(call):
                     bot.send_message(call.message.chat.id,
                                      Formatter.format_schedule(element))
                     logger.info(f'бот отправил пользователю '
-                                f'"{call.from_user.username}" сообщение')
+                                f'"{call.from_user.username}" график работы за {month} {year}')
 
 
 if __name__ == "__main__":
