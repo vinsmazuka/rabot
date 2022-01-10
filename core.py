@@ -31,7 +31,8 @@ class Worker(Base):
     deployment_date = Column(Date(), nullable=False)
     birthday = Column(Date(), nullable=False)
     status = Column(Boolean, nullable=False)
-    schedule = relationship("Schedule", backref="workers", cascade="all,delete")
+    schedule = relationship("Schedule", backref="worker", cascade="all,delete")
+    requests = relationship("Requests", backref="worker", cascade="all,delete")
 
     def __str__(self):
         return (f'{self.id}, {self.name}, {self.surname}, {self.patronymic}, '
@@ -81,6 +82,19 @@ class Schedule(Base):
     d31 = Column(String(50), nullable=True)
     hours = Column(Float(50), nullable=True)
     wage = Column(Float(50), nullable=True)
+    worker_id = Column(Integer, ForeignKey('workers.id'))
+
+
+class Requests(Base):
+    """
+    Класс, который представляет запросы сотрудников
+    на изготовление копии трудовой книжки.
+    Каждый экземляр - отдельный запрос суотрудника
+    """
+    __tablename__ = 'requests'
+    id = Column(Integer, primary_key=True)
+    time = Column(Date(), nullable=False)
+    quantity = Column(Integer, nullable=False)
     worker_id = Column(Integer, ForeignKey('workers.id'))
 
 
@@ -659,9 +673,8 @@ class DbChanger:
 
 
 # if __name__ == "__main__":
-# #     print(type(DbLoader.load_personalities('firmamento_89')))
-# # #     # Base.metadata.create_all(engine)
-# # #     # Base.metadata.drop_all(engine)
+#     Base.metadata.create_all(engine)
+    # Base.metadata.drop_all(engine)
 
 
 
