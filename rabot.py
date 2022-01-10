@@ -67,23 +67,35 @@ class Sendler:
     pass
 
     @staticmethod
-    def mass_sending(message, users_dict):
+    def mass_sending(message_fusers, unblock_users):
         """
         осуществляет массовую рассылку сообщения
-        message
-        пользователям из словаря unblock_users.
-        В словаре unblock_users ключ - username пользователя
-        в телеграмме, значение - chat.id с пользователем
+        message пользователям из списка unblock_users.
+        :param message_fusers: сообщение для пользователей, тип str
+        :param unblock_users: список словарей,
+        каждый словарь из списка содержит инф пользоветле
+        :return: список сообщений для администратора (тип - list)
         """
-        for key, value in users_dict.items():
+        message_fadmin = []
+        if not unblock_users:
+            result = ('Массовая рассылка не удалась, в базе данных нет '
+                      'разблокированных пользователей, '
+                      'добавьте пользователей в БД, либо разблокируйте имеюшихся')
+            logger.info(result)
+            message_fadmin.append(result)
+        for user in unblock_users:
             try:
-                bot.send_message(chat_id=value, text=message)
-                logger.info(f'Сообщение "{message}" было отправлено '
-                            f'пользователю {key} ')
-
+                bot.send_message(chat_id=user['chat_id'], text=message_fusers)
+                result = (f'Сообщение "{message_fusers}" было отправлено '
+                          f'пользователю "{user["username"]}" ')
+                logger.info(result)
+                message_fadmin.append(result)
             except telebot.apihelper.ApiTelegramException:
-                logger.exception(f'Бот не смог доставить пользователю {key} '
-                                 f'сообщение "{message}"')
+                result = (f'Бот не смог доставить пользователю "{user["username"]}" '
+                          f'сообщение "{message_fusers}", вероятно пользователь заблокировал бота')
+                logger.exception(result)
+                message_fadmin.append(result)
+        return message_fadmin
 
 
 def autorize_func(username, chat_id):
