@@ -95,6 +95,7 @@ class Requests(Base):
     id = Column(Integer, primary_key=True)
     time = Column(Date(), nullable=False)
     quantity = Column(Integer, nullable=False)
+    status = Column(Boolean, nullable=False)
     worker_id = Column(Integer, ForeignKey('workers.id'))
 
 
@@ -672,8 +673,8 @@ class DbChanger:
                     f'пользователя "{username}" в таблицу "workers" в БД')
 
 
-# if __name__ == "__main__":
-#     Base.metadata.create_all(engine)
+if __name__ == "__main__":
+    Base.metadata.create_all(engine)
     # Base.metadata.drop_all(engine)
 
 
