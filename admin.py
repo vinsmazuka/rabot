@@ -215,6 +215,8 @@ def add_worker(data):
     """
     if isinstance(data, tuple):
         AdmMessanger.show_messages(data)
+    elif data is None:
+        pass
     else:
         DbWriter.write_worker_db(data)
         AdmMessanger.show_message('была осуществлена запись в таблицу "workers" в БД')
@@ -228,6 +230,8 @@ def add_schedule(data):
     """
     if isinstance(data, tuple):
         AdmMessanger.show_messages(data)
+    elif data is None:
+        pass
     else:
         DbWriter.write_schedule_db(data)
         AdmMessanger.show_message('была осуществлена запись в таблицу "schedule" в БД')
