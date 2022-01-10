@@ -86,13 +86,13 @@ class Sendler:
         for user in unblock_users:
             try:
                 bot.send_message(chat_id=user['chat_id'], text=message_fusers)
-                result = (f'Сообщение "{message_fusers}" было отправлено '
+                result = (f'Сообщение было отправлено '
                           f'пользователю "{user["username"]}" ')
                 logger.info(result)
                 message_fadmin.append(result)
             except telebot.apihelper.ApiTelegramException:
                 result = (f'Бот не смог доставить пользователю "{user["username"]}" '
-                          f'сообщение "{message_fusers}", вероятно пользователь заблокировал бота')
+                          f'сообщение , вероятно пользователь заблокировал бота')
                 logger.exception(result)
                 message_fadmin.append(result)
         return message_fadmin
