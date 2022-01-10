@@ -1,5 +1,7 @@
+import time
 import tkinter
 import easygui
+from threading import Thread
 import app_logger
 from rabot import Sendler
 from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger
@@ -7,6 +9,7 @@ from core import Worker, Schedule, DbEraser
 
 logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
+global main_window
 
 
 class AdmMessanger:
@@ -257,8 +260,32 @@ def inp_path():
     return easygui.fileopenbox("укажите путь к файлу")
 
 
+def check_requests(requests):
+    """
+    проверяет, есть ли новые запросы
+    на на изготовление копий ТК от
+    сотрудников и оповещает администратора,
+    если есть новые запросы
+    :param requests: список запросов(тип - list)
+    :return: None
+    """
+    global main_window
+    while True:
+        time.sleep(30)
+        print('функция запустилась')
+        if not requests:
+            pass
+        else:
+            lbl = tkinter.Label(main_window,
+                                text='есть неисполненные заявки на изготовление копии ТК от сотрудников',
+                                font="Arial 14",
+                                foreground="red")
+            lbl.place(relx=0.00001, rely=0.87)
+
+
 def menu():
     """Создает главное меню администраторского интерфейса"""
+    global main_window
     main_window = tkinter.Tk()
     main_window.title('Администраторский интерфейс бота')
     main_window.geometry("1300x600")
@@ -346,11 +373,19 @@ def menu():
     btn_m6.place(relx=0.00001, rely=0.60)
     btn_m7.place(relx=0.00001, rely=0.69)
     btn_m8.place(relx=0.00001, rely=0.78)
+    second_tread = Thread(target=check_requests, args=(DbLoader.load_requests(),), daemon=True)
+    second_tread.start()
     main_window.mainloop()
 
 
 if __name__ == "__main__":
-    menu()
+    main_thread = Thread(target=menu)
+    main_thread.start()
+
+
+
+
+
 
 
 
