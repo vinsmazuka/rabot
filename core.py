@@ -514,20 +514,31 @@ class DbLoader:
         return result_list
 
     @staticmethod
-    def load_users():
+    def load_users(inp_status=None):
         """
         подгружает поля "username", "chat_id",
-        "status" из таблицы "workers" БД
-        :return: список кортежей, каждый кортеж - содержит
+        "status", "id" из таблицы "workers" БД
+        :param inp_status: если не указан - подгружаются все пользователи,
+        если указан, то подгружаются только те, у кот указанное
+        значение аргумента inp_status равно значению
+        в поле "status"(тип - Boolean)
+        :return: список словарей, каждый словарь - содержит
         информацию об отдельном пользователе
         """
         result_list = []
-        q = session.query(Worker)
+        if inp_status is None:
+            q = session.query(Worker)
+        else:
+            q = session.query(Worker).filter(Worker.status == inp_status)
         for element in q:
-            row = (element.username, element.chat_id, element.status)
+            row = dict()
+            row['username'] = element.username
+            row['chat_id'] = element.chat_id
+            row['status'] = element.status
+            row['id'] = element.id
             result_list.append(row)
-        logger.info('подгружены столбцы "username", "chat_id", '
-                    '"status" из таблицы "workers" из БД')
+            logger.info('подгружены столбцы "username", "chat_id", '
+                        '"status", "id" из таблицы "workers" БД')
         return result_list
 
     @staticmethod
@@ -622,10 +633,10 @@ class DbChanger:
                     f'пользователя "{username}" в таблицу "workers" в БД')
 
 
-# if __name__ == "__main__":
-#     print((DbLoader.load_months('firmamento_89')))
-# # #     # Base.metadata.create_all(engine)
-# # #     # Base.metadata.drop_all(engine)
+if __name__ == "__main__":
+    DbLoader.load_users(True)
+# #     # Base.metadata.create_all(engine)
+# #     # Base.metadata.drop_all(engine)
 
 
 
