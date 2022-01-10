@@ -138,7 +138,7 @@ class AdmMessanger:
         """
         def save():
             """
-            возвращает сотрудника, выбранного администратором из списка data
+            фиксирует сотрудника, выбранного администратором из списка data
             и передает его данные и значение аргумента status
             в метод change_status класса DbChanger для
             изменения поля "status" по сотруднику в БД,
@@ -158,7 +158,7 @@ class AdmMessanger:
         for element in data:
             selector.insert(tkinter.END, element)
         btn = tkinter.Button(root,
-                             text="delete",
+                             text="изменить статус",
                              width=23,
                              height=3,
                              bg="white",
