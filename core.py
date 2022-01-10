@@ -2,7 +2,7 @@ import csv
 import re
 from datetime import datetime
 from string import ascii_lowercase
-from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date,  DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine, Float
@@ -93,7 +93,7 @@ class Requests(Base):
     """
     __tablename__ = 'requests'
     id = Column(Integer, primary_key=True)
-    time = Column(Date(), nullable=False)
+    time = Column(DateTime(), nullable=False)
     quantity = Column(Integer, nullable=False)
     status = Column(Boolean, nullable=False)
     worker_id = Column(Integer, ForeignKey('workers.id'))
@@ -457,6 +457,26 @@ class DbWriter:
                 session.add(schedule)
             session.commit()
             logger.info('произведена запись данных в таблицу "schedule" в БД')
+
+    @staticmethod
+    def write_requests_db(username, quantity, users):
+        """
+        добавляет запрос пользователя на выдачу
+        копии ТК в БД в таблицу "requests"
+        :param username: username пользователя, который сделал запрос
+         в телеграмме(тип - str)
+        :param quantity: кол-во копий, указанное пользователем(тип - int)
+        :param users: список пользователей из БД
+        :return: None
+        """
+        for user in users:
+            if user['username'] == username:
+                request = Requests(time=datetime.now(), quantity=int(quantity),
+                                   status=False, worker_id=user['id'])
+                session.add(request)
+                session.commit()
+                logger.info('произведена запись данных в таблицу "requests" в БД')
+                break
 
 
 class DbLoader:
