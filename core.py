@@ -542,8 +542,8 @@ class DbLoader:
             row['status'] = element.status
             row['id'] = element.id
             result_list.append(row)
-            logger.info('подгружены столбцы "username", "chat_id", '
-                        '"status", "id" из таблицы "workers" БД')
+        logger.info('подгружены столбцы "username", "chat_id", '
+                    '"status", "id" из таблицы "workers" БД')
         return result_list
 
     @staticmethod
@@ -555,7 +555,21 @@ class DbLoader:
         :return: список объектов класса Schedule(тип - list)
         """
         q = session.query(Worker).filter(Worker.username == username)
+        logger.info(f'загружены графики работника ID "{q[0].id}" '
+                    f'username "{username}" из БД')
         return q[0].schedule
+
+    @staticmethod
+    def load_worker(username):
+        """
+        Подгружает из БД работника с указанным username
+        :param username: тип - str
+        :return: объект класс Worker
+        """
+        q = session.query(Worker).filter(Worker.username == username)
+        logger.info(f'загружен работник ID "{q[0].id}" '
+                    f'username "{username}" из БД')
+        return q[0]
 
 
 class DbEraser:
@@ -638,8 +652,8 @@ class DbChanger:
                     f'пользователя "{username}" в таблицу "workers" в БД')
 
 
-if __name__ == "__main__":
-    DbLoader.load_table(Worker)
+# if __name__ == "__main__":
+#     print(type(DbLoader.load_personalities('firmamento_89')))
 # #     # Base.metadata.create_all(engine)
 # #     # Base.metadata.drop_all(engine)
 
