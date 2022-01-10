@@ -56,7 +56,7 @@ class AdmMessanger:
         :param data: список состоящий из кортежей, каждый кортеж состоит из
         2 элементов, 1 элемент - название месяца, 2 - соответствующий месяцу год
         """
-        def save():
+        def delete():
             """
             возвращает месяц, выбранный администратором из списка data
             и передает его данные в метод del_schedule класса DbEraser для удаления
@@ -76,12 +76,12 @@ class AdmMessanger:
         for element in data:
             selector.insert(tkinter.END, element)
         btn = tkinter.Button(root,
-                             text="save",
+                             text="delete",
                              width=23,
                              height=3,
                              bg="white",
                              fg="blue",
-                             command=lambda: save())
+                             command=lambda: delete())
         selector.pack()
         btn.pack()
         root.mainloop()
@@ -95,7 +95,7 @@ class AdmMessanger:
         3 элементов: 1 - элемент - id сотрудника в БД, 2 - фамилия сотрудника,
         3 - имя сотрудника
         """
-        def save():
+        def delete():
             """
             возвращает сотрудника, выбранного администратором из списка data
             и передает его данные в метод del_worker класса DbEraser для удаления
@@ -115,12 +115,12 @@ class AdmMessanger:
         for element in data:
             selector.insert(tkinter.END, element)
         btn = tkinter.Button(root,
-                             text="save",
+                             text="delete",
                              width=23,
                              height=3,
                              bg="white",
                              fg="blue",
-                             command=lambda: save())
+                             command=lambda: delete())
         selector.pack()
         btn.pack()
         root.mainloop()
@@ -158,7 +158,7 @@ class AdmMessanger:
         for element in data:
             selector.insert(tkinter.END, element)
         btn = tkinter.Button(root,
-                             text="save",
+                             text="delete",
                              width=23,
                              height=3,
                              bg="white",
