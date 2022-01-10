@@ -1,7 +1,7 @@
 import tkinter
 import easygui
-import rabot
 import app_logger
+from rabot import Sendler
 from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger
 from core import Worker, Schedule, DbEraser
 
@@ -38,7 +38,7 @@ class AdmMessanger:
         :param messages - кортеж из сообщений в формате str
         """
         root = tkinter.Toplevel()
-        root.title('Не корректный формат данных:')
+        root.title('Сообщение для администратора:')
         root.geometry("1200x400")
         for i, value in enumerate(messages):
             locals()['lbl' + str(i)] = tkinter.Label(root,
@@ -168,6 +168,44 @@ class AdmMessanger:
         btn.pack()
         root.mainloop()
 
+    @staticmethod
+    def send_mass_message(unblocked_users):
+        """
+        рассылает сообщения пользователям
+        из списка unblocked_users
+        :param unblocked_users: список, каждый элемент которого
+        - словарь с данными о пользователе
+        :return: None
+        """
+        def start_sending():
+            """
+            сохраняет сообщение, введенное администратором,
+            запускает его рассылку,
+            выводит на экран для администратора сообщение
+            о результатах рассылки
+            :return: None
+            """
+            nonlocal root, tex
+            user_input = tex.get(1.0, tkinter.END)
+            root.destroy()
+            AdmMessanger.show_messages(Sendler.mass_sending(user_input,
+                                                            unblocked_users))
+        root = tkinter.Toplevel()
+        root.title('Ввведите текст сообщения')
+        root.geometry("800x200")
+        tex = tkinter.Text(root, width=75, height=7,
+                           font="Arial 14", wrap='word')
+        btn = tkinter.Button(root,
+                             text="начать рассылку",
+                             width=23,
+                             height=3,
+                             bg="white",
+                             fg="blue",
+                             command=lambda: start_sending())
+        tex.pack()
+        btn.pack()
+        root.mainloop()
+
 
 def add_worker(data):
     """
@@ -287,6 +325,13 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: AdmMessanger.set_status(DbLoader.load_workers(), True))
+    btn_m8 = tkinter.Button(main_window,
+                            text="Разослать сообщение",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: AdmMessanger.send_mass_message(DbLoader.load_users('True')))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
@@ -296,6 +341,7 @@ def menu():
     btn_m5.place(relx=0.00001, rely=0.51)
     btn_m6.place(relx=0.00001, rely=0.60)
     btn_m7.place(relx=0.00001, rely=0.69)
+    btn_m8.place(relx=0.00001, rely=0.78)
     main_window.mainloop()
 
 
