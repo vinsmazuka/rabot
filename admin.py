@@ -260,27 +260,28 @@ def inp_path():
     return easygui.fileopenbox("укажите путь к файлу")
 
 
-def check_requests(requests):
+def check_requests():
     """
     проверяет, есть ли новые запросы
     на на изготовление копий ТК от
     сотрудников и оповещает администратора,
     если есть новые запросы
-    :param requests: список запросов(тип - list)
     :return: None
     """
     global main_window
+    count = 1
     while True:
         time.sleep(30)
-        print('функция запустилась')
-        if not requests:
+        print(f'функция запустилась {count} раз')
+        if not DbLoader.load_requests():
             pass
         else:
             lbl = tkinter.Label(main_window,
                                 text='есть неисполненные заявки на изготовление копии ТК от сотрудников',
                                 font="Arial 14",
                                 foreground="red")
-            lbl.place(relx=0.00001, rely=0.87)
+            lbl.place(relx=0.3, rely=0.001)
+        count += 1
 
 
 def menu():
@@ -373,7 +374,7 @@ def menu():
     btn_m6.place(relx=0.00001, rely=0.60)
     btn_m7.place(relx=0.00001, rely=0.69)
     btn_m8.place(relx=0.00001, rely=0.78)
-    second_tread = Thread(target=check_requests, args=(DbLoader.load_requests(),), daemon=True)
+    second_tread = Thread(target=check_requests, daemon=True)
     second_tread.start()
     main_window.mainloop()
 
