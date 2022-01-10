@@ -2,14 +2,11 @@ from datetime import datetime
 import telebot
 import app_logger
 from botconfig import bot_configuration
-from core import DbLoader, DbChanger
+from core import DbLoader, DbChanger, DbWriter
 
 
 logger = app_logger.get_logger(__name__)
 bot = telebot.TeleBot(bot_configuration['TOKEN'])
-
-users = {'vinsmazuka': '1712299131',
-         'firmamento_89': '1641854395'}
 
 
 class Formatter:
@@ -143,7 +140,8 @@ def send_main_menu(message):
         btn_schedule = telebot.types.InlineKeyboardButton(text="график работы", callback_data='schedule')
         btn_personalities = telebot.types.InlineKeyboardButton(text="личные данные", callback_data='personalities')
         btn_url = telebot.types.InlineKeyboardButton(text="сайт организации", url='https://www.python.org')
-        inline_keyboard.add(btn_schedule, btn_personalities, btn_url)
+        btn_doc = telebot.types.InlineKeyboardButton(text="заказать копию ТК", callback_data='document')
+        inline_keyboard.add(btn_schedule, btn_personalities, btn_url, btn_doc)
         bot.send_message(message.chat.id, 'Выберите опцию:', reply_markup=inline_keyboard)
         logger.info(f'бот отправил пользователю '
                     f'"{message.from_user.username}" гланое меню')
@@ -183,6 +181,31 @@ def user_answer(call):
                          format_personalities(DbLoader.load_worker(call.from_user.username)))
         logger.info(f'бот отправил пользователю '
                     f'"{call.from_user.username}" персональные данные')
+    elif call.data == 'document':
+        logger.info(f'пользователь "{call.from_user.username}" запросил копию ТК')
+        inline_keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
+        btn1 = telebot.types.InlineKeyboardButton(text='1', callback_data='1')
+        btn2 = telebot.types.InlineKeyboardButton(text='2', callback_data='2')
+        inline_keyboard.add(btn1, btn2)
+        bot.send_message(call.message.chat.id, 'выберите количество копий: ', reply_markup=inline_keyboard)
+        logger.info(f'бот запросил у пользователя "{call.from_user.username}" данные о '
+                    f'необходимом количестве копий ТК')
+    elif call.data == '1':
+        DbWriter.write_requests_db(call.from_user.username,
+                                   call.data,
+                                   DbLoader.load_users())
+        bot.send_message(call.message.chat.id,
+                         'ваш запрос принят, бот оповестит вас, когда документы будут готовы')
+        logger.info(f'бот отправил пользователю "{call.from_user.username}" сообщение '
+                    f'о том, что запрос зарегистрирован')
+    elif call.data == '2':
+        DbWriter.write_requests_db(call.from_user.username,
+                                   call.data,
+                                   DbLoader.load_users())
+        bot.send_message(call.message.chat.id,
+                         'ваш запрос принят, бот оповестит вас, когда документы будут готовы')
+        logger.info(f'бот отправил пользователю "{call.from_user.username}" сообщение '
+                    f'о том, что запрос зарегистрирован')
     else:
         try:
             month, year = call.data.split(' ')
