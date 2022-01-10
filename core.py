@@ -453,10 +453,12 @@ class DbLoader:
     @staticmethod
     def load_table(class_name):
         """
-        Подгружает таблицу "workers" из БД,
-        возращает список, каждый элемент списка
-        содержит информацию об отдельном сотруднике
-        в виде словаря
+        Подгружает все строки из таблицы в БД,
+        которая соответсвует указанному классу class_name
+        :param class_name: название класса
+        :return: список, каждый элемент списка
+        содержит словарь с информацией об
+        отдельной строке таблицы(тип -list)
         """
         q = session.query(class_name)
         result = []
@@ -634,7 +636,7 @@ class DbChanger:
 
 
 if __name__ == "__main__":
-    DbLoader.load_users(True)
+    DbLoader.load_table(Worker)
 # #     # Base.metadata.create_all(engine)
 # #     # Base.metadata.drop_all(engine)
 
