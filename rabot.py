@@ -85,9 +85,9 @@ def autorize_func(username, chat_id):
         return False
     else:
         for element in DbLoader.load_users():
-            if username in element and element[2] is True:
+            if username in element.values() and element['status'] is True:
                 logger.info(f'пользователь"{username}" прошел авторизацию')
-                if str(chat_id) in element:
+                if str(chat_id) == element['chat_id']:
                     return True
                     break
                 else:
