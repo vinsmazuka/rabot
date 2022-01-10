@@ -505,6 +505,9 @@ class DbLoader:
     def load_workers():
         """
         Подгружает столбцы "id", "surname", "name" из таблицы "workers" из БД'
+        для всех работников
+        :return: список кортежей, каждый элемент кортежа
+        содержит инф-цию об отдельном работнике
         """
         result_list = []
         q = session.query(Worker)
