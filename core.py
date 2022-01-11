@@ -627,12 +627,12 @@ class DbLoader:
         :return: список словарей, каждый словарь содержит
         иноформацию о запросе и пользователе, который его сделал
         """
-        q = session.query(Worker, Requests).filter(Worker.id == Requests.id)
+        q = session.query(Worker, Requests).filter(Worker.id == Requests.worker_id)
         result_list = []
         for request in q:
             if not request.Requests.status:
                 row = dict()
-                row['id'] = request.Worker.id
+                row['request_id'] = request.Requests.id
                 row['surname'] = request.Worker.surname
                 row['name'] = request.Worker.name
                 row['quantity'] = request.Requests.quantity
@@ -640,7 +640,7 @@ class DbLoader:
                 row['req_status'] = request.Requests.status
                 row['username'] = request.Worker.username
                 result_list.append(row)
-        return result_list
+        return sorted(result_list, key=lambda x: x['request_id'])
 
 
 class DbEraser:
@@ -723,20 +723,19 @@ class DbChanger:
                     f'пользователя "{username}" в таблицу "workers" в БД')
 
     @staticmethod
-    def changestatus_request(worker_id, new_value):
+    def changestatus_request(request_id, new_value):
         """
         изменяет статус заявки сотрудника на выдачу ТК в БД
-        :param worker_id: кортеж id работников, подавших заявку(тип - tuple)
+        :param request_id: список id запросов в БД
         :param new_value: Новое значение(тип Boolean)
         :return: список сообщений для администратора(тип - список)
         """
         messages = []
-        for item in worker_id:
-
-            q = session.query(Requests).filter(Requests.worker_id == item).one()
+        for item in request_id:
+            q = session.query(Requests).filter(Requests.id == item).one()
             q.status = new_value
             session.add(q)
-            message = f'статус заявки сотрудника с Id "{item}"  был изменен на "{new_value}" в БД'
+            message = f'статус запроса с Id "{item}" был изменен на "{new_value}" в БД'
             messages.append(message)
             logger.info(message)
         session.commit()
