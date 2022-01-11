@@ -7,9 +7,9 @@ from rabot import Sendler
 from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger
 from core import Worker, Schedule, DbEraser
 
+global main_window
 logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
-global main_window
 
 
 class AdmMessanger:
@@ -172,6 +172,49 @@ class AdmMessanger:
         root.mainloop()
 
     @staticmethod
+    def set_request_status(data):
+        """
+        Изменяет статус запроса на выдачу копии ТК на "True" в БД
+        :param data: список сотрудников, каждый элемент списка - словарь
+        с данными о конкретном сотруднике(тип - list)
+        :return: None
+        """
+        def save():
+            """
+            фиксирует запросы, выбранные администратором из списка data
+            и передает их данные в метод changestatus_request
+            класса DbChanger для
+            изменения поля "status" по запросам в БД,
+            затем открывает окно с сообщением для администратора
+            """
+            nonlocal root, selector
+            selected_requests = []
+            user_input = selector.curselection()
+            for index in user_input:
+                selected_requests.append(data[index]['request_id'])
+            root.destroy()
+            AdmMessanger.show_messages(DbChanger.changestatus_request
+                                       (selected_requests, True))
+
+        root = tkinter.Toplevel()
+        root.title('Выберите запроос из списка')
+        root.geometry("400x600")
+        selector = tkinter.Listbox(root, height=len(data),
+                                   width=60, selectmode='multiple')
+        for request in data:
+            selector.insert(tkinter.END, list(request.values())[0:5])
+        btn = tkinter.Button(root,
+                             text="пометить как исполненные",
+                             width=23,
+                             height=3,
+                             bg="white",
+                             fg="blue",
+                             command=lambda: save())
+        selector.pack()
+        btn.pack()
+        root.mainloop()
+
+    @staticmethod
     def send_mass_message(unblocked_users):
         """
         рассылает сообщения пользователям
@@ -263,25 +306,24 @@ def inp_path():
 def check_requests():
     """
     проверяет, есть ли новые запросы
-    на на изготовление копий ТК от
+    на изготовление копий ТК от
     сотрудников и оповещает администратора,
     если есть новые запросы
     :return: None
     """
     global main_window
-    count = 1
+    message = tkinter.StringVar()
+    lbl = tkinter.Label(main_window,
+                        textvariable=message,
+                        font="Arial 14",
+                        foreground="red")
+    lbl.place(relx=0.3, rely=0.001)
     while True:
-        time.sleep(30)
-        print(f'функция запустилась {count} раз')
+        time.sleep(5)
         if not DbLoader.load_requests():
-            pass
+            message.set('')
         else:
-            lbl = tkinter.Label(main_window,
-                                text='есть неисполненные заявки на изготовление копии ТК от сотрудников',
-                                font="Arial 14",
-                                foreground="red")
-            lbl.place(relx=0.3, rely=0.001)
-        count += 1
+            message.set('есть неисполненные заявки на изготовление копии ТК от сотрудников')
 
 
 def menu():
@@ -364,6 +406,13 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: AdmMessanger.send_mass_message(DbLoader.load_users('True')))
+    btn_m9 = tkinter.Button(main_window,
+                            text="Неисполненные запросы",
+                            width=23,
+                            height=3,
+                            bg="white",
+                            fg="blue",
+                            command=lambda: AdmMessanger.set_request_status(DbLoader.load_requests()))
     lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
@@ -374,6 +423,7 @@ def menu():
     btn_m6.place(relx=0.00001, rely=0.60)
     btn_m7.place(relx=0.00001, rely=0.69)
     btn_m8.place(relx=0.00001, rely=0.78)
+    btn_m9.place(relx=0.00001, rely=0.87)
     second_tread = Thread(target=check_requests, daemon=True)
     second_tread.start()
     main_window.mainloop()
