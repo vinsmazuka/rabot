@@ -221,7 +221,6 @@ class DbFormatter:
             message = ('структура данных в файле не соответсвует требованиям, либо файл пустой',)
             return message
         else:
-            print(data)
             warnings = []
             result = []
             today = datetime.now().date()
