@@ -89,7 +89,8 @@ class Sendler:
                 message_fadmin.append(result)
             except telebot.apihelper.ApiTelegramException:
                 result = (f'бот не смог доставить пользователю "{user["username"]}" '
-                          f'сообщение, вероятно пользователь заблокировал бота')
+                          f'сообщение, вероятно пользователь заблокировал бота, либо '
+                          f'у пользователя с ботом еще нет своего чата')
                 logger.exception(result)
                 message_fadmin.append(result)
         return message_fadmin
