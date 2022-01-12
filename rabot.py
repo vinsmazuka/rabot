@@ -184,23 +184,23 @@ def user_answer(call):
     elif call.data == 'document':
         logger.info(f'пользователь "{call.from_user.username}" запросил копию ТК')
         inline_keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
-        btn1 = telebot.types.InlineKeyboardButton(text='1', callback_data='1')
-        btn2 = telebot.types.InlineKeyboardButton(text='2', callback_data='2')
+        btn1 = telebot.types.InlineKeyboardButton(text='1', callback_data='1 копия')
+        btn2 = telebot.types.InlineKeyboardButton(text='2', callback_data='2 копии')
         inline_keyboard.add(btn1, btn2)
         bot.send_message(call.message.chat.id, 'выберите количество копий: ', reply_markup=inline_keyboard)
         logger.info(f'бот запросил у пользователя "{call.from_user.username}" данные о '
                     f'необходимом количестве копий ТК')
-    elif call.data == '1':
+    elif call.data == '1 копия':
         DbWriter.write_requests_db(call.from_user.username,
-                                   call.data,
+                                   call.data[0],
                                    DbLoader.load_users())
         bot.send_message(call.message.chat.id,
                          'ваш запрос принят, бот оповестит вас, когда документы будут готовы')
         logger.info(f'бот отправил пользователю "{call.from_user.username}" сообщение '
                     f'о том, что запрос зарегистрирован')
-    elif call.data == '2':
+    elif call.data == '2 копии':
         DbWriter.write_requests_db(call.from_user.username,
-                                   call.data,
+                                   call.data[0],
                                    DbLoader.load_users())
         bot.send_message(call.message.chat.id,
                          'ваш запрос принят, бот оповестит вас, когда документы будут готовы')
