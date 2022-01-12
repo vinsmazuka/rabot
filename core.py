@@ -539,7 +539,7 @@ class DbLoader:
             sorted_result = (sorted(result_list, key=lambda x: x[1], reverse=True))
         else:
             for element in q:
-                if element.workers.username == username:
+                if element.worker.username == username:
                     row = (element.month, element.year)
                     if row not in result_list:
                         result_list.append(row)
