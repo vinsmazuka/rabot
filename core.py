@@ -638,6 +638,7 @@ class DbLoader:
                 row['time'] = request.Requests.time.strftime('%H:%M-%d.%m.%Y')
                 row['req_status'] = request.Requests.status
                 row['username'] = request.Worker.username
+                row['chat_id'] = request.Worker.chat_id
                 result_list.append(row)
         return sorted(result_list, key=lambda x: x['request_id'])
 
