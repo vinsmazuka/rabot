@@ -743,8 +743,6 @@ class DbChanger:
 
 
 # if __name__ == "__main__":
-#     print(DbChanger.changestatus_request((1, 2), False))
-#     print(DbLoader.load_requests())
 #     Base.metadata.create_all(engine)
 #     Base.metadata.drop_all(engine)
 
