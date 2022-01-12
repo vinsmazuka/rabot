@@ -7,7 +7,7 @@ from rabot import Sendler
 from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger
 from core import Worker, Schedule, DbEraser
 
-global main_window
+global main_window, btn_m9
 logger = app_logger.get_logger(__name__)
 logger.info('Модуль админ запущен')
 
@@ -187,11 +187,14 @@ class AdmMessanger:
             изменения поля "status" по запросам в БД,
             затем открывает окно с сообщением для администратора
             """
-            nonlocal root, selector
+            global btn_m9
+            nonlocal root, selector, data
             selected_requests = []
             user_input = selector.curselection()
             for index in user_input:
                 selected_requests.append(data[index]['request_id'])
+            if len(selected_requests) == len(data):
+                btn_m9.configure(bg="white")
             root.destroy()
             AdmMessanger.show_messages(DbChanger.changestatus_request
                                        (selected_requests, True))
@@ -307,34 +310,25 @@ def check_requests():
     """
     проверяет, есть ли новые запросы
     на изготовление копий ТК от
-    сотрудников и оповещает администратора,
-    если есть новые запросы
+    сотрудников и изменяет цвет кнопки
+    btn_m9 на красный, если запросы есть
     :return: None
     """
-    global main_window
-    message = tkinter.StringVar()
-    lbl = tkinter.Label(main_window,
-                        textvariable=message,
-                        font="Arial 14",
-                        foreground="red")
-    lbl.place(relx=0.3, rely=0.001)
+    global main_window, btn_m9
     while True:
         time.sleep(5)
         if not DbLoader.load_requests():
-            message.set('')
+            btn_m9.configure(bg="white")
         else:
-            message.set('есть неисполненные заявки на изготовление копии ТК от сотрудников')
+            btn_m9.configure(bg="red")
 
 
 def menu():
     """Создает главное меню администраторского интерфейса"""
-    global main_window
+    global main_window, btn_m9
     main_window = tkinter.Tk()
     main_window.title('Администраторский интерфейс бота')
     main_window.geometry("1300x600")
-    lbl1 = tkinter.Label(main_window,
-                         text='выберите опцию:',
-                         font="Arial 14")
     btn_m0 = tkinter.Button(main_window,
                             text="Добавить работников в БД",
                             width=23,
@@ -407,13 +401,12 @@ def menu():
                             fg="blue",
                             command=lambda: AdmMessanger.send_mass_message(DbLoader.load_users('True')))
     btn_m9 = tkinter.Button(main_window,
-                            text="Неисполненные запросы",
+                            text="запросы на копию ТК",
                             width=23,
                             height=3,
                             bg="white",
                             fg="blue",
                             command=lambda: AdmMessanger.set_request_status(DbLoader.load_requests()))
-    lbl1.place(relx=0.00001, rely=0.001)
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
     btn_m2.place(relx=0.00001, rely=0.24)
