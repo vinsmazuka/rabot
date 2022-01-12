@@ -401,7 +401,7 @@ def menu():
                             fg="blue",
                             command=lambda: AdmMessanger.send_mass_message(DbLoader.load_users('True')))
     btn_m9 = tkinter.Button(main_window,
-                            text="запросы на копию ТК",
+                            text="Запросы на копию ТК",
                             width=23,
                             height=3,
                             bg="white",
