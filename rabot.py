@@ -70,12 +70,12 @@ class Sendler:
         message пользователям из списка unblock_users.
         :param message_fusers: сообщение для пользователей, тип str
         :param unblock_users: список словарей,
-        каждый словарь из списка содержит инф пользоветле
+        каждый словарь из списка содержит инф пользователе
         :return: список сообщений для администратора (тип - list)
         """
         message_fadmin = []
         if not unblock_users:
-            result = ('Массовая рассылка не удалась, в базе данных нет '
+            result = ('массовая рассылка не удалась, в базе данных нет '
                       'разблокированных пользователей, '
                       'добавьте пользователей в БД, либо разблокируйте имеюшихся')
             logger.info(result)
@@ -83,13 +83,38 @@ class Sendler:
         for user in unblock_users:
             try:
                 bot.send_message(chat_id=user['chat_id'], text=message_fusers)
-                result = (f'Сообщение было отправлено '
+                result = (f'сообщение было отправлено '
                           f'пользователю "{user["username"]}" ')
                 logger.info(result)
                 message_fadmin.append(result)
             except telebot.apihelper.ApiTelegramException:
-                result = (f'Бот не смог доставить пользователю "{user["username"]}" '
-                          f'сообщение , вероятно пользователь заблокировал бота')
+                result = (f'бот не смог доставить пользователю "{user["username"]}" '
+                          f'сообщение, вероятно пользователь заблокировал бота')
+                logger.exception(result)
+                message_fadmin.append(result)
+        return message_fadmin
+
+    @staticmethod
+    def sending_request_result(requests):
+        """
+        рассылает работникам информацию об
+        иготовлению копии ТК
+        :param requests: список запросов, каждый элемент списка - словарь
+        с данными о конкретном запросе(тип - list)
+        :return: сообщения для администратора(тип - list)
+        """
+        message_fadmin = []
+        for item in requests:
+            try:
+                bot.send_message(chat_id=item['chat_id'], text="Ваши документы готовы, "
+                                                               "обратитесь к администратору для их получения")
+                result = (f'сообщение о готовности документов было отправлено '
+                          f'пользователю "{item["username"]}"')
+                logger.info(result)
+                message_fadmin.append(result)
+            except telebot.apihelper.ApiTelegramException:
+                result = (f'бот не смог доставить пользователю "{item["username"]}" '
+                          f'сообщение о готовности документов, вероятно пользователь заблокировал бота')
                 logger.exception(result)
                 message_fadmin.append(result)
         return message_fadmin
@@ -195,7 +220,7 @@ def user_answer(call):
                                    call.data[0],
                                    DbLoader.load_users())
         bot.send_message(call.message.chat.id,
-                         'ваш запрос принят, бот оповестит вас, когда документы будут готовы')
+                         'Ваш запрос принят, бот оповестит вас, когда документы будут готовы')
         logger.info(f'бот отправил пользователю "{call.from_user.username}" сообщение '
                     f'о том, что запрос зарегистрирован')
     elif call.data == '2 копии':
@@ -203,7 +228,7 @@ def user_answer(call):
                                    call.data[0],
                                    DbLoader.load_users())
         bot.send_message(call.message.chat.id,
-                         'ваш запрос принят, бот оповестит вас, когда документы будут готовы')
+                         'Ваш запрос принят, бот оповестит вас, когда документы будут готовы')
         logger.info(f'бот отправил пользователю "{call.from_user.username}" сообщение '
                     f'о том, что запрос зарегистрирован')
     else:
