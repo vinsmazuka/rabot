@@ -1,6 +1,7 @@
 import time
 import tkinter
 import easygui
+from itertools import chain
 from threading import Thread
 import app_logger
 from rabot import Sendler
@@ -174,9 +175,9 @@ class AdmMessanger:
     @staticmethod
     def set_request_status(data):
         """
-        Изменяет статус запроса на выдачу копии ТК на "True" в БД
-        :param data: список сотрудников, каждый элемент списка - словарь
-        с данными о конкретном сотруднике(тип - list)
+        Изменяет статус запроса на выдачу копии ТК на "True" в БД,
+        :param data: список запросов, каждый элемент списка - словарь
+        с данными о конкретном запросе(тип - list)
         :return: None
         """
         def save():
@@ -185,19 +186,24 @@ class AdmMessanger:
             и передает их данные в метод changestatus_request
             класса DbChanger для
             изменения поля "status" по запросам в БД,
+            отправляет "заказчикам" сообщение о готовности
+            документов,
             затем открывает окно с сообщением для администратора
             """
             global btn_m9
             nonlocal root, selector, data
             selected_requests = []
+            mailing_list = []
             user_input = selector.curselection()
             for index in user_input:
                 selected_requests.append(data[index]['request_id'])
+                mailing_list.append(data[index])
             if len(selected_requests) == len(data):
                 btn_m9.configure(bg="white")
             root.destroy()
-            AdmMessanger.show_messages(DbChanger.changestatus_request
-                                       (selected_requests, True))
+            messages = chain(Sendler.sending_request_result(mailing_list),
+                             DbChanger.changestatus_request(selected_requests, True))
+            AdmMessanger.show_messages(messages)
 
         root = tkinter.Toplevel()
         root.title('Выберите запроос из списка')
