@@ -52,6 +52,15 @@ class AdmMessanger:
             locals()['lbl' + str(i)].pack(anchor="w")
         root.mainloop()
 
+
+class AdmAssistant:
+    """
+    клас, предназначенный для создания виджетов,
+    необходимых для выполнения команд администратора,
+    также, обеспечивающий выполнение команд администратора
+    """
+    pass
+
     @staticmethod
     def delete_month(data):
         """
@@ -376,7 +385,7 @@ def menu():
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: AdmMessanger.delete_month(DbLoader.load_months()))
+                            command=lambda: AdmAssistant.delete_month(DbLoader.load_months()))
     btn_m5 = tkinter.Button(main_window,
                             text="Удалить сотрудника\n"
                                  "из БД",
@@ -384,35 +393,35 @@ def menu():
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: AdmMessanger.delete_worker(DbLoader.load_workers()))
+                            command=lambda: AdmAssistant.delete_worker(DbLoader.load_workers()))
     btn_m6 = tkinter.Button(main_window,
                             text="Заблокировать сотрудника",
                             width=23,
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: AdmMessanger.set_status(DbLoader.load_workers()))
+                            command=lambda: AdmAssistant.set_status(DbLoader.load_workers()))
     btn_m7 = tkinter.Button(main_window,
                             text="Разблокировать сотрудника",
                             width=23,
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: AdmMessanger.set_status(DbLoader.load_workers(), True))
+                            command=lambda: AdmAssistant.set_status(DbLoader.load_workers(), True))
     btn_m8 = tkinter.Button(main_window,
                             text="Разослать сообщение",
                             width=23,
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: AdmMessanger.send_mass_message(DbLoader.load_users('True')))
+                            command=lambda: AdmAssistant.send_mass_message(DbLoader.load_users('True')))
     btn_m9 = tkinter.Button(main_window,
                             text="Запросы на копию ТК",
                             width=23,
                             height=3,
                             bg="white",
                             fg="blue",
-                            command=lambda: AdmMessanger.set_request_status(DbLoader.load_requests()))
+                            command=lambda: AdmAssistant.set_request_status(DbLoader.load_requests()))
     btn_m0.place(relx=0.00001, rely=0.06)
     btn_m1.place(relx=0.00001, rely=0.15)
     btn_m2.place(relx=0.00001, rely=0.24)
