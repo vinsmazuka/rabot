@@ -24,6 +24,7 @@ class AdmMessanger:
     def show_message(message):
         """
         выводит сообщение для администратора на экран админского интерфейса
+        :param message: сообщение(тип - str)
         """
         root = tkinter.Toplevel()
         root.title('Сообщение для администратора:')
@@ -39,7 +40,8 @@ class AdmMessanger:
     def show_messages(messages):
         """
         выводит окно с сообщениями для администратора
-        :param messages - кортеж из сообщений в формате str
+        :param messages - кортеж из сообщений,
+        кадое сообщение в формате str
         """
         root = tkinter.Toplevel()
         root.title('Сообщение для администратора:')
