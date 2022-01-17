@@ -473,7 +473,7 @@ class DbWriter:
             logger.info('произведена запись данных в таблицу "schedule" в БД')
 
     @staticmethod
-    def write_requests_db(username, quantity, users):
+    def write_requests_db(username, quantity, users, session_name=session):
         """
         добавляет запрос пользователя на выдачу
         копии ТК в БД в таблицу "requests"
@@ -481,14 +481,16 @@ class DbWriter:
          в телеграмме(тип - str)
         :param quantity: кол-во копий, указанное пользователем(тип - int)
         :param users: список пользователей из БД
+        :param session_name: имя сессии, по умолчанию -
+        переменная session из модуля Core
         :return: None
         """
         for user in users:
             if user['username'] == username:
                 request = Requests(time=datetime.now(), quantity=int(quantity),
                                    status=False, worker_id=user['id'])
-                session.add(request)
-                session.commit()
+                session_name.add(request)
+                session_name.commit()
                 logger.info('произведена запись данных в таблицу "requests" в БД')
                 break
 
@@ -582,7 +584,7 @@ class DbLoader:
         return result_list
 
     @staticmethod
-    def load_users(inp_status=None):
+    def load_users(inp_status=None, session_name=session):
         """
         подгружает поля "username", "chat_id",
         "status", "id" из таблицы "workers" БД
@@ -590,14 +592,16 @@ class DbLoader:
         если указан, то подгружаются только те, у кот указанное
         значение аргумента inp_status равно значению
         в поле "status"(тип - Boolean)
+        :param session_name: имя сессии, по умолчанию -
+        переменная session из модуля Core
         :return: список словарей, каждый словарь - содержит
         информацию об отдельном пользователе
         """
         result_list = []
         if inp_status is None:
-            q = session.query(Worker)
+            q = session_name.query(Worker)
         else:
-            q = session.query(Worker).filter(Worker.status == inp_status)
+            q = session_name.query(Worker).filter(Worker.status == inp_status)
         for element in q:
             row = dict()
             row['username'] = element.username
@@ -758,7 +762,9 @@ class DbChanger:
         return messages
 
 
-
+# if __name__ == "__main__":
+#     Base.metadata.create_all(engine)
+#     Base.metadata.drop_all(engine)
 
 
 
