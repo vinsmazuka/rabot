@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, Float
 from core import CsvReader, DbFormatter, CsvWriter, DbLoader, DbWriter
 
 
-test_engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/test_database", echo=True)
+test_engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/test_database")
 Base = declarative_base()
 test_session = sessionmaker(bind=test_engine)
 test_session = test_session()
@@ -108,10 +108,13 @@ test_list12 = [{'worker_id': '1', 'month': 'январь', 'year': '2022', 'd1':
 test_list13 = [{'name': 'Сергей', 'surname': 'Иванов', 'patronymic': 'Владимирович', 'username': 'tyiorty', 'salary': 24500.0, 'deployment_date': datetime.date(2018, 12, 1), 'birthday': datetime.date(1998, 1, 1)}, {'name': 'Ксения', 'surname': 'Корягина', 'patronymic': 'Вальдемировна', 'username': 'firmamento', 'salary': 50000.0, 'deployment_date': datetime.date(2016, 3, 12), 'birthday': datetime.date(2001, 1, 1)}]
 test_list14 = [{'surname': 'Иванов', 'name': 'Сергей', 'username': 'tyiorty', 'salary': 24500.0, 'birthday': datetime.date(1998, 1, 1), 'id': 1, 'patronymic': 'Владимирович', 'chat_id': '', 'deployment_date': datetime.date(2018, 12, 1), 'status': True}, {'surname': 'Корягина', 'name': 'Ксения', 'username': 'firmamento', 'salary': 50000.0, 'birthday': datetime.date(2001, 1, 1), 'id': 2, 'patronymic': 'Вальдемировна', 'chat_id': '', 'deployment_date': datetime.date(2016, 3, 12), 'status': True}]
 test_list15 = [{'month': 'январь', 'd7': '11:00-20:00', 'd14': '11:00-20:00', 'd22': '10:00-19:00', 'd28': '11:00-20:00', 'year': '2022', 'd8': '10:00-19:00', 'd15': '10:00-19:00', 'd29': '10:00-19:00', 'd31': '', 'd1': '', 'd9': '', 'd16': '', 'd23': '', 'd30': '', 'd2': '', 'd10': '', 'd17': '', 'd24': '', 'hours': 160.0, 'd3': '', 'd11': '10:00-19:00', 'd18': '10:00-19:00', 'd25': '10:00-19:00', 'wage': 45300.5, 'd4': '10:00-19:00', 'd12': '11:00-20:00', 'd19': '11:00-20:00', 'd26': '11:00-20:00', 'worker_id': 1, 'id': 1, 'd5': '11:00-20:00', 'd13': '10:00-19:00', 'd20': '10:00-19:00', 'd27': '10:00-19:00', 'd6': '10:00-19:00', 'd21': '11:00-20:00'}, {'month': 'январь', 'd7': '09:00-18:00', 'd14': '09:00-18:00', 'd22': '09:00-18:00', 'd28': '09:00-18:00', 'year': '2022', 'd8': '09:00-18:00', 'd15': '09:00-18:00', 'd29': '09:00-18:00', 'd31': '', 'd1': '', 'd9': '', 'd16': '', 'd23': '', 'd30': '', 'd2': '', 'd10': '', 'd17': '', 'd24': '', 'hours': 168.5, 'd3': '09:00-18:30', 'd11': '09:00-18:00', 'd18': '09:00-18:00', 'd25': '09:00-18:00', 'wage': 0.0, 'd4': '09:00-18:00', 'd12': '09:00-18:00', 'd19': '09:00-18:00', 'd26': '09:00-18:00', 'worker_id': 2, 'id': 2, 'd5': '09:00-18:00', 'd13': '09:00-18:00', 'd20': '09:00-18:00', 'd27': '09:00-18:00', 'd6': '09:00-18:00', 'd21': '09:00-18:00'}]
+test_list16 = [{'username': 'tyiorty', 'chat_id': '', 'status': True, 'id': 1}, {'username': 'firmamento', 'chat_id': '', 'status': True, 'id': 2}]
+test_list17 = [{'time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'), 'quantity': 2, 'worker_id': 1, 'id': 1, 'status': False}]
 Base.metadata.drop_all(test_engine)
 Base.metadata.create_all(test_engine)
 DbWriter.write_worker_db(test_list13, test_session)
 DbWriter.write_schedule_db(test_list8, test_session)
+DbWriter.write_requests_db('tyiorty', '2',  test_list16, test_session)
 
 
 class TestCoreMethods(TestCase):
@@ -165,6 +168,14 @@ class TestCoreMethods(TestCase):
         Проверка корректного чтения/записи данных в таблицу "schedule" БД
         """
         self.assertEqual(DbLoader.load_table(Schedule, test_session), test_list15)
+
+    def test_write_requests_db(self):
+        """
+        Проверка корректного чтения/записи данных в таблицу "requests" БД
+        """
+        data = DbLoader.load_table(Requests, test_session)
+        data[0]['time'] = data[0]['time'].strftime('%Y-%m-%d %H:%M')
+        self.assertEqual(data, test_list17)
 
     def test_load_workers_id(self):
         """
