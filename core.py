@@ -417,7 +417,7 @@ class DbWriter:
     pass
 
     @staticmethod
-    def write_worker_db(data, session_name):
+    def write_worker_db(data, session_name=session):
         """
         Записывает данные из списка data в БД в таблицу 'workers'
         :param data: - список сотрудников, которых необходимо
@@ -440,7 +440,7 @@ class DbWriter:
             logger.info('произведена запись данных в таблицу "workers" в БД')
 
     @staticmethod
-    def write_schedule_db(data, session_name):
+    def write_schedule_db(data, session_name=session):
         """
         Записывает данные из списка data в БД в таблицу 'schedule'
         :param data: - список графиков, которые необходимо
@@ -500,7 +500,7 @@ class DbLoader:
     pass
 
     @staticmethod
-    def load_workers_id(session_name):
+    def load_workers_id(session_name=session):
         """
         Подгружает id работников из БД,
         возвращает в виде списка
@@ -513,7 +513,7 @@ class DbLoader:
         return id_list
 
     @staticmethod
-    def load_table(class_name, session_name):
+    def load_table(class_name, session_name=session):
         """
         Подгружает все строки из таблицы в БД,
         которая соответсвует указанному классу class_name
