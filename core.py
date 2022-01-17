@@ -301,7 +301,7 @@ class DbFormatter:
                 len(warnings) > 0 or data == ''\
                 else logger.info("данные соответствуют формату")
 
-            return tuple(warnings) if len(warnings) > 0 else result
+            return tuple(warnings) or result
 
     @staticmethod
     def format_schedule(data, id_list):
@@ -416,9 +416,14 @@ class DbWriter:
     pass
 
     @staticmethod
-    def write_worker_db(data):
+    def write_worker_db(data, session_name):
         """
         Записывает данные из списка data в БД в таблицу 'workers'
+        :param data: - список сотрудников, которых необходимо
+        записать в БД, каждый элемент списка - словарь,
+        содержащий инф-цию об отдельном сотруднике
+        :param session_name: - имя сессии
+        :return: None
         """
         if not data:
             pass
@@ -429,8 +434,8 @@ class DbWriter:
                                 chat_id='', salary=item['salary'],
                                 deployment_date=item['deployment_date'], birthday=item['birthday'],
                                 status=True)
-                session.add(worker)
-            session.commit()
+                session_name.add(worker)
+            session_name.commit()
             logger.info('произведена запись данных в таблицу "workers" в БД')
 
     @staticmethod
@@ -742,7 +747,9 @@ class DbChanger:
         return messages
 
 
-
+# if __name__ == "__main__":
+#     Base.metadata.create_all(engine)
+#     Base.metadata.drop_all(engine)
 
 
 
