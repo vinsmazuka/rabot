@@ -5,7 +5,7 @@ from itertools import chain
 from threading import Thread
 import app_logger
 from rabot import Sendler
-from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger, session
+from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger
 from core import Worker, Schedule, DbEraser
 
 global main_window, btn_m9
@@ -284,7 +284,7 @@ def add_worker(data):
     elif data is None:
         pass
     else:
-        DbWriter.write_worker_db(data, session)
+        DbWriter.write_worker_db(data)
         AdmMessanger.show_message('была осуществлена запись в таблицу "workers" в БД')
 
 
@@ -299,7 +299,7 @@ def add_schedule(data):
     elif data is None:
         pass
     else:
-        DbWriter.write_schedule_db(data, session)
+        DbWriter.write_schedule_db(data)
         AdmMessanger.show_message('была осуществлена запись в таблицу "schedule" в БД')
 
 
@@ -370,7 +370,7 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: write_file_csv(CsvWriter.write_worker
-                                                           (inp_path(), DbLoader.load_table(Worker, session))))
+                                                           (inp_path(), DbLoader.load_table(Worker))))
     btn_m3 = tkinter.Button(main_window,
                             text="Записать график\n"
                                  "из БД в файл",
@@ -379,7 +379,7 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: write_file_csv(CsvWriter.write_schedules
-                                                           (inp_path(), DbLoader.load_table(Schedule, session))))
+                                                           (inp_path(), DbLoader.load_table(Schedule))))
     btn_m4 = tkinter.Button(main_window,
                             text="Удалить график за\n"
                                  "месяц из БД",
