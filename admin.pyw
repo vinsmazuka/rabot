@@ -5,7 +5,7 @@ from itertools import chain
 from threading import Thread
 import app_logger
 from rabot import Sendler
-from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger
+from core import DbWriter, DbFormatter, CsvReader, DbLoader, CsvWriter, DbChanger, session
 from core import Worker, Schedule, DbEraser
 
 global main_window, btn_m9
@@ -284,7 +284,7 @@ def add_worker(data):
     elif data is None:
         pass
     else:
-        DbWriter.write_worker_db(data)
+        DbWriter.write_worker_db(data, session)
         AdmMessanger.show_message('была осуществлена запись в таблицу "workers" в БД')
 
 
