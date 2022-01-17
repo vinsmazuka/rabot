@@ -155,6 +155,7 @@ class TestCoreMethods(TestCase):
     def test_write_read_db(self):
         """
         Проверка корректного чтения/записи данных в таблицы "workers", "schedule" БД
+        Тестируются методы write_worker_db, write_schedule_db, load_table
         """
         DbWriter.write_worker_db(test_list13, test_session)
         DbWriter.write_schedule_db(test_list8, test_session)
