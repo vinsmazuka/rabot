@@ -370,7 +370,7 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: write_file_csv(CsvWriter.write_worker
-                                                           (inp_path(), DbLoader.load_table(Worker))))
+                                                           (inp_path(), DbLoader.load_table(Worker, session))))
     btn_m3 = tkinter.Button(main_window,
                             text="Записать график\n"
                                  "из БД в файл",
@@ -379,7 +379,7 @@ def menu():
                             bg="white",
                             fg="blue",
                             command=lambda: write_file_csv(CsvWriter.write_schedules
-                                                           (inp_path(), DbLoader.load_table(Schedule))))
+                                                           (inp_path(), DbLoader.load_table(Schedule, session))))
     btn_m4 = tkinter.Button(main_window,
                             text="Удалить график за\n"
                                  "месяц из БД",
