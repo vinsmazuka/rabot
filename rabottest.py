@@ -174,9 +174,7 @@ class TestCoreMethods(TestCase):
         self.assertEqual(DbLoader.load_workers_id(test_session), ['1', '2'])
 
 
-# if __name__ == "__main__":
-#     Base.metadata.create_all(test_engine)
-#     Base.metadata.drop_all(test_engine)
+
 
 
 

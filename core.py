@@ -758,9 +758,6 @@ class DbChanger:
         return messages
 
 
-# if __name__ == "__main__":
-#     Base.metadata.create_all(engine)
-#     Base.metadata.drop_all(engine)
 
 
 
