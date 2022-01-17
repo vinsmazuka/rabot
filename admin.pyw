@@ -299,7 +299,7 @@ def add_schedule(data):
     elif data is None:
         pass
     else:
-        DbWriter.write_schedule_db(data)
+        DbWriter.write_schedule_db(data, session)
         AdmMessanger.show_message('была осуществлена запись в таблицу "schedule" в БД')
 
 
