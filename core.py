@@ -500,13 +500,13 @@ class DbLoader:
     pass
 
     @staticmethod
-    def load_workers_id():
+    def load_workers_id(session_name):
         """
         Подгружает id работников из БД,
         возвращает в виде списка
         """
         id_list = []
-        q = session.query(Worker)
+        q = session_name.query(Worker)
         for element in q:
             id_list.append(str(element.id))
         logger.info('подгружены id сотрудников из таблицы "workers" БД')
