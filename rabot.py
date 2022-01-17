@@ -248,6 +248,7 @@ def user_answer(call):
 
 if __name__ == "__main__":
     logger.info(f'Бот запущен')
+    print(f'Бот запущен...')
     bot.infinity_polling()
 
 
