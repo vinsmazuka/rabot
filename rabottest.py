@@ -110,6 +110,8 @@ test_list14 = [{'surname': 'Иванов', 'name': 'Сергей', 'username': '
 test_list15 = [{'month': 'январь', 'd7': '11:00-20:00', 'd14': '11:00-20:00', 'd22': '10:00-19:00', 'd28': '11:00-20:00', 'year': '2022', 'd8': '10:00-19:00', 'd15': '10:00-19:00', 'd29': '10:00-19:00', 'd31': '', 'd1': '', 'd9': '', 'd16': '', 'd23': '', 'd30': '', 'd2': '', 'd10': '', 'd17': '', 'd24': '', 'hours': 160.0, 'd3': '', 'd11': '10:00-19:00', 'd18': '10:00-19:00', 'd25': '10:00-19:00', 'wage': 45300.5, 'd4': '10:00-19:00', 'd12': '11:00-20:00', 'd19': '11:00-20:00', 'd26': '11:00-20:00', 'worker_id': 1, 'id': 1, 'd5': '11:00-20:00', 'd13': '10:00-19:00', 'd20': '10:00-19:00', 'd27': '10:00-19:00', 'd6': '10:00-19:00', 'd21': '11:00-20:00'}, {'month': 'январь', 'd7': '09:00-18:00', 'd14': '09:00-18:00', 'd22': '09:00-18:00', 'd28': '09:00-18:00', 'year': '2022', 'd8': '09:00-18:00', 'd15': '09:00-18:00', 'd29': '09:00-18:00', 'd31': '', 'd1': '', 'd9': '', 'd16': '', 'd23': '', 'd30': '', 'd2': '', 'd10': '', 'd17': '', 'd24': '', 'hours': 168.5, 'd3': '09:00-18:30', 'd11': '09:00-18:00', 'd18': '09:00-18:00', 'd25': '09:00-18:00', 'wage': 0.0, 'd4': '09:00-18:00', 'd12': '09:00-18:00', 'd19': '09:00-18:00', 'd26': '09:00-18:00', 'worker_id': 2, 'id': 2, 'd5': '09:00-18:00', 'd13': '09:00-18:00', 'd20': '09:00-18:00', 'd27': '09:00-18:00', 'd6': '09:00-18:00', 'd21': '09:00-18:00'}]
 Base.metadata.drop_all(test_engine)
 Base.metadata.create_all(test_engine)
+DbWriter.write_worker_db(test_list13, test_session)
+DbWriter.write_schedule_db(test_list8, test_session)
 
 
 class TestCoreMethods(TestCase):
@@ -152,15 +154,24 @@ class TestCoreMethods(TestCase):
         self.assertEqual(DbFormatter.format_schedule(test_list5, ['1', '2']), test_list6)
         self.assertEqual(DbFormatter.format_schedule(test_list7, ['1', '2']), test_list8)
 
-    def test_write_read_db(self):
+    def test_write_worker_db(self):
         """
-        Проверка корректного чтения/записи данных в таблицы "workers", "schedule" БД
-        Тестируются методы write_worker_db, write_schedule_db, load_table
+        Проверка корректного чтения/записи данных в таблицу "workers" БД
         """
-        DbWriter.write_worker_db(test_list13, test_session)
-        DbWriter.write_schedule_db(test_list8, test_session)
         self.assertEqual(DbLoader.load_table(Worker, test_session), test_list14)
+
+    def test_write_schedule_db(self):
+        """
+        Проверка корректного чтения/записи данных в таблицу "schedule" БД
+        """
         self.assertEqual(DbLoader.load_table(Schedule, test_session), test_list15)
+
+    def test_load_workers_id(self):
+        """
+        Проверка корректной выгрузки списка id сотрудников из
+        таблицы "workers" БД
+        """
+        self.assertEqual(DbLoader.load_workers_id(test_session), ['1', '2'])
 
 
 # if __name__ == "__main__":
