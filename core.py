@@ -406,7 +406,8 @@ class DbFormatter:
             logger.info("данные из файла не соответствуют формату") if \
                 len(errors) > 0 or data == '' \
                 else logger.info("данные соответствуют формату")
-            return tuple(errors) if len(errors) > 0 else result
+
+            return tuple(errors) or result
 
 
 class DbWriter:
@@ -422,7 +423,7 @@ class DbWriter:
         :param data: - список сотрудников, которых необходимо
         записать в БД, каждый элемент списка - словарь,
         содержащий инф-цию об отдельном сотруднике
-        :param session_name: - имя сессии
+        :param session_name: имя сессии
         :return: None
         """
         if not data:
@@ -439,7 +440,16 @@ class DbWriter:
             logger.info('произведена запись данных в таблицу "workers" в БД')
 
     @staticmethod
-    def write_schedule_db(data):
+    def write_schedule_db(data, session_name):
+        """
+        Записывает данные из списка data в БД в таблицу 'schedule'
+        :param data: - список графиков, которые необходимо
+        записать в БД, каждый элемент списка - словарь,
+        содержащий инф-цию о графике работы отдельного сотрудника в
+        отдельном месяце
+        :param session_name: имя сессии
+        :return: None
+        """
         if not data:
             pass
         else:
@@ -458,8 +468,8 @@ class DbWriter:
                                     d31=item['d31'], hours=item['hours'], wage=item['wage'],
                                     worker_id=item['worker_id']
                                     )
-                session.add(schedule)
-            session.commit()
+                session_name.add(schedule)
+            session_name.commit()
             logger.info('произведена запись данных в таблицу "schedule" в БД')
 
     @staticmethod
@@ -503,16 +513,17 @@ class DbLoader:
         return id_list
 
     @staticmethod
-    def load_table(class_name):
+    def load_table(class_name, session_name):
         """
         Подгружает все строки из таблицы в БД,
         которая соответсвует указанному классу class_name
         :param class_name: название класса
+        :param session_name: имя сессии
         :return: список, каждый элемент списка
         содержит словарь с информацией об
         отдельной строке таблицы(тип -list)
         """
-        q = session.query(class_name)
+        q = session_name.query(class_name)
         result = []
         for element in q:
             item = vars(element)
