@@ -6,10 +6,11 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date,  Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine, Float
+from databases import databases_config
 import app_logger
 
 logger = app_logger.get_logger(__name__)
-engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/rabotdb")
+engine = create_engine(databases_config['basic_db'])
 Base = declarative_base()
 session = sessionmaker(bind=engine)
 session = session()
@@ -716,17 +717,19 @@ class DbChanger:
     pass
 
     @staticmethod
-    def change_status(worker_id, new_value):
+    def change_status(worker_id, new_value, session_name=session):
         """
         Меняет старое значение в БД в столбце "status" на новое
         :param worker_id: id сотрудника(тип int)
         :param new_value: новое значение(тип Boolean)
+        :param session_name: имя сессии, по умолчанию -
+        переменная session из модуля Core
         :return: сообщение о произведенных изменениях(тип str)
         """
-        q = session.query(Worker).filter(Worker.id == worker_id).one()
+        q = session_name.query(Worker).filter(Worker.id == worker_id).one()
         q.status = new_value
-        session.add(q)
-        session.commit()
+        session_name.add(q)
+        session_name.commit()
         message = f'статус сотрудника с Id "{worker_id}" в БД был изменен на "{new_value}"'
         logger.info(message)
         return message
