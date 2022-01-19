@@ -117,11 +117,18 @@ test_list17 = [{'time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'), 'qua
 test_list18 = [('январь', '2022'), ('декабрь', '2021')]
 test_list19 = [(1, 'Иванов', 'Сергей'), (2, 'Корягина', 'Ксения')]
 test_list20 = [{'username': 'tyiorty', 'chat_id': '', 'status': True, 'id': 1}, {'username': 'firmamento', 'chat_id': '', 'status': True, 'id': 2}]
+test_list21 = [{'username': 'tyiorty', 'chat_id': '', 'status': False, 'id': 1}]
+
 Base.metadata.drop_all(test_engine)
 Base.metadata.create_all(test_engine)
 DbWriter.write_worker_db(test_list13, test_session)
 DbWriter.write_schedule_db(test_list8, test_session)
 DbWriter.write_requests_db('tyiorty', '2',  test_list16, test_session)
+Base.metadata.drop_all(test_engine1)
+Base.metadata.create_all(test_engine1)
+DbWriter.write_worker_db(test_list13, test_session1)
+DbWriter.write_schedule_db(test_list8, test_session1)
+DbWriter.write_requests_db('tyiorty', '2', test_list16, test_session1)
 
 
 class TestCoreMethods(TestCase):
@@ -214,9 +221,11 @@ class TestCoreMethods(TestCase):
         self.assertEqual(DbLoader.load_users(inp_status=True, session_name=test_session), test_list20)
 
     def test_change_status(self):
-        DbChanger.change_status(1, False, test_session)
-        print(DbLoader.load_users(inp_status=False, session_name=test_session))
-
+        """
+        Проверка корректного изменения статуса сотрудника в БД
+        """
+        DbChanger.change_status(1, False, test_session1)
+        self.assertEqual(DbLoader.load_users(inp_status=False, session_name=test_session1), test_list21)
 
 
 
