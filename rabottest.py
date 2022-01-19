@@ -4,13 +4,17 @@ from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Date,  Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine, Float
-from core import CsvReader, DbFormatter, CsvWriter, DbLoader, DbWriter
+from databases import databases_config
+from core import CsvReader, DbFormatter, CsvWriter, DbLoader, DbWriter, DbChanger
 
 
-test_engine = create_engine("postgresql+psycopg2://postgres:Art1988em@localhost/test_database")
+test_engine = create_engine(databases_config['test_db0'])
+test_engine1 = create_engine(databases_config['test_db1'])
 Base = declarative_base()
 test_session = sessionmaker(bind=test_engine)
 test_session = test_session()
+test_session1 = sessionmaker(bind=test_engine1)
+test_session1 = test_session1()
 
 
 class Worker(Base):
@@ -208,6 +212,10 @@ class TestCoreMethods(TestCase):
         """
         self.assertEqual(DbLoader.load_users(session_name=test_session), test_list20)
         self.assertEqual(DbLoader.load_users(inp_status=True, session_name=test_session), test_list20)
+
+    def test_change_status(self):
+        DbChanger.change_status(1, False, test_session)
+        print(DbLoader.load_users(inp_status=False, session_name=test_session))
 
 
 
