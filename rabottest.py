@@ -33,8 +33,12 @@ class Worker(Base):
     deployment_date = Column(Date(), nullable=False)
     birthday = Column(Date(), nullable=False)
     status = Column(Boolean, nullable=False)
-    schedule = relationship("Schedule", backref="worker", cascade="all,delete")
-    requests = relationship("Requests", backref="worker", cascade="all,delete")
+    schedule = relationship("Schedule",
+                            backref="worker",
+                            cascade="all,delete")
+    requests = relationship("Requests",
+                            backref="worker",
+                            cascade="all,delete")
 
 
 class Schedule(Base):
@@ -168,8 +172,10 @@ class TestCoreMethods(TestCase):
         Проверка соответствия данных установленному формату
         для записи в таблицу "schedule" в БД
         """
-        self.assertEqual(DbFormatter.format_schedule(test_list5, ['1', '2']), test_list6)
-        self.assertEqual(DbFormatter.format_schedule(test_list7, ['1', '2']), test_list8)
+        self.assertEqual(DbFormatter.format_schedule(test_list5,
+                                                     ['1', '2']), test_list6)
+        self.assertEqual(DbFormatter.format_schedule(test_list7,
+                                                     ['1', '2']), test_list8)
 
     def test_write_worker_db(self):
         """
@@ -181,7 +187,8 @@ class TestCoreMethods(TestCase):
         """
         Проверка корректного чтения/записи данных в таблицу "schedule" БД
         """
-        self.assertEqual(DbLoader.load_table(Schedule, test_session), test_list15)
+        self.assertEqual(DbLoader.load_table(Schedule, test_session),
+                         test_list15)
 
     def test_write_requests_db(self):
         """
@@ -203,7 +210,8 @@ class TestCoreMethods(TestCase):
         Проверка корректной выгрузки столбцов "month" и "year" по сотрудникам
         из таблицы "schedule" БД
         """
-        self.assertEqual(DbLoader.load_months(session_name=test_session), test_list18)
+        self.assertEqual(DbLoader.load_months(session_name=test_session),
+                         test_list18)
         self.assertEqual(DbLoader.load_months(username='firmamento',
                                               session_name=test_session), [('декабрь', '2021')])
 
@@ -217,15 +225,18 @@ class TestCoreMethods(TestCase):
         """
         Проверка корректной выгрузки инф о пользователях из БД
         """
-        self.assertEqual(DbLoader.load_users(session_name=test_session), test_list20)
-        self.assertEqual(DbLoader.load_users(inp_status=True, session_name=test_session), test_list20)
+        self.assertEqual(DbLoader.load_users(session_name=test_session),
+                         test_list20)
+        self.assertEqual(DbLoader.load_users(inp_status=True,
+                                             session_name=test_session), test_list20)
 
     def test_change_status(self):
         """
         Проверка корректного изменения статуса сотрудника в БД
         """
         DbChanger.change_status(1, False, test_session1)
-        self.assertEqual(DbLoader.load_users(inp_status=False, session_name=test_session1), test_list21)
+        self.assertEqual(DbLoader.load_users(inp_status=False,
+                                             session_name=test_session1), test_list21)
 
 
 
