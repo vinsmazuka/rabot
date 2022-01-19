@@ -690,7 +690,7 @@ class DbEraser:
         message = (f'все строки из таблицы "schedule" в БД, '
                    f'в которых месяц = {month} и год = {year} были удалены')
         logger.info(f'все строки из таблицы "schedule" в БД, '
-                   f'в которых месяц = {month} и год = {year} были удалены')
+                    f'в которых месяц = {month} и год = {year} были удалены')
         return message
 
     @staticmethod
