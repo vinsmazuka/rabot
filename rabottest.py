@@ -112,6 +112,7 @@ test_list16 = [{'username': 'tyiorty', 'chat_id': '', 'status': True, 'id': 1}, 
 test_list17 = [{'time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M'), 'quantity': 2, 'worker_id': 1, 'id': 1, 'status': False}]
 test_list18 = [('январь', '2022'), ('декабрь', '2021')]
 test_list19 = [(1, 'Иванов', 'Сергей'), (2, 'Корягина', 'Ксения')]
+test_list20 = [{'username': 'tyiorty', 'chat_id': '', 'status': True, 'id': 1}, {'username': 'firmamento', 'chat_id': '', 'status': True, 'id': 2}]
 Base.metadata.drop_all(test_engine)
 Base.metadata.create_all(test_engine)
 DbWriter.write_worker_db(test_list13, test_session)
@@ -200,6 +201,16 @@ class TestCoreMethods(TestCase):
         Проверка корректной выгрузки инф о сотрудниках из БД
         """
         self.assertEqual(DbLoader.load_workers(test_session), test_list19)
+
+    def test_load_users(self):
+        """
+        Проверка корректной выгрузки инф о пользователях из БД
+        """
+        self.assertEqual(DbLoader.load_users(session_name=test_session), test_list20)
+        self.assertEqual(DbLoader.load_users(inp_status=True, session_name=test_session), test_list20)
+
+
+
 
 
 
