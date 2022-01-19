@@ -520,7 +520,8 @@ class DbLoader:
         Подгружает все строки из таблицы в БД,
         которая соответсвует указанному классу class_name
         :param class_name: название класса
-        :param session_name: имя сессии
+        :param session_name: имя сессии, по умолчанию -
+        переменная session из модуля Core
         :return: список, каждый элемент списка
         содержит словарь с информацией об
         отдельной строке таблицы(тип -list)
@@ -542,7 +543,8 @@ class DbLoader:
         либо только для работника, у которого значение поля "username"
         равно значению аргумента username, если аргумент username был указан
         :param username: - username работника в телеграмме(тип - str)
-        :param session_name: имя сессии
+        :param session_name: имя сессии, по умолчанию -
+        переменная session из модуля Core
         :return: список кортежей, каждый кортеж состоит из 2 элементов:
         1-название месяца, 2-год, соответствующий месяцу
         """
@@ -568,15 +570,17 @@ class DbLoader:
         return sorted_result
 
     @staticmethod
-    def load_workers():
+    def load_workers(session_name=session):
         """
         Подгружает столбцы "id", "surname", "name" из таблицы "workers" из БД'
         для всех работников
+        :param session_name: имя сессии, по умолчанию -
+        переменная session из модуля Core
         :return: список кортежей, каждый элемент кортежа
         содержит инф-цию об отдельном работнике
         """
         result_list = []
-        q = session.query(Worker)
+        q = session_name.query(Worker)
         for element in q:
             row = (element.id, element.surname, element.name)
             result_list.append(row)
