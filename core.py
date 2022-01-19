@@ -535,18 +535,19 @@ class DbLoader:
         return result
 
     @staticmethod
-    def load_months(username=None):
+    def load_months(username=None, session_name=session):
         """
         Подгружает столбцы "month" и "year" из таблицы "schedule" БД для
         всех всех работников, если параметр username, не указан,
         либо только для работника, у которого значение поля "username"
-        равно значениею аргумента username, если аргумент username был указан
+        равно значению аргумента username, если аргумент username был указан
         :param username: - username работника в телеграмме(тип - str)
-        :return: список кортежей, каждый кортеж ссотоит из 2 элементов:
+        :param session_name: имя сессии
+        :return: список кортежей, каждый кортеж состоит из 2 элементов:
         1-название месяца, 2-год, соответствующий месяцу
         """
         result_list = []
-        q = session.query(Schedule)
+        q = session_name.query(Schedule)
         if username is None:
             for element in q:
                 row = (element.month, element.year)
