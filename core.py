@@ -280,7 +280,7 @@ class DbFormatter:
                         else:
                             row[key] = value
                     elif key == 'salary':
-                        if value == '':
+                        if value == '' or value == '0':
                             message = f"вы не указали оклад у сотрудника '{element['surname']}'"
                             warnings.append(message)
                         else:
@@ -768,24 +768,4 @@ class DbChanger:
             logger.info(message)
         session.commit()
         return messages
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
