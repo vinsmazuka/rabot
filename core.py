@@ -271,7 +271,7 @@ class DbFormatter:
                                        'Количество знаков - минимум 5. '
                                        'Возможно применять нижнее подчеркивание и цифры)')
                             warnings.append(message)
-                        elif [x for x in value if x not in usname_sample]:
+                        elif [x for x in value if x.lower() not in usname_sample]:
                             message = (f'не корректный формат username: "{value}"'
                                        '(username должно cостоять из латинских букв. '
                                        'Количество знаков - минимум 5. '
@@ -768,4 +768,3 @@ class DbChanger:
             logger.info(message)
         session.commit()
         return messages
-
